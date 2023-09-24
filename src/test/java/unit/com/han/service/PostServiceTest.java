@@ -16,9 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,50 +34,87 @@ public class PostServiceTest {
   @InjectMocks
   private PostServiceImpl postService;
 
+  @Nested
+  class GetPostDetail_Test {
+    private int validPostId = 1;
 
- @Nested
- class GetPostList_Test {
+    private Post dummyPost = new Post(1);
 
-   private Post validPost = new Post(1);
+    @Test
+    public void getPostDetail_Throws_Exception() throws SQLException {
+      when(postRepository.findById(validPostId)).thenThrow(SQLException.class);
 
-   private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID.getName(), 10, 1);
+      assertThrows(SQLException.class, () -> postService.getPostDetail(validPostId));
+      verify(postRepository).findById(validPostId);
+    }
 
-   private int page;
-   private int limit;
-   private int offset;
-   private String sort;
+    @Test
+    public void getPostDetail_Return_Empty() throws SQLException {
+      int nonExistingId = validPostId + 1000;
+      when(postRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+      Optional<Post> post = postService.getPostDetail(nonExistingId);
+
+      verify(postRepository).findById(nonExistingId);
+      Assertions.assertThat(post).isNotNull();
+      Assertions.assertThat(post.isPresent()).isFalse();
+    }
+
+    @Test
+    public void getPostDetail_Return_Post() throws SQLException {
+      when(postRepository.findById(validPostId)).thenReturn(Optional.of(dummyPost));
+
+      Optional<Post> post = postService.getPostDetail(validPostId);
+
+      verify(postRepository).findById(validPostId);
+      Assertions.assertThat(post).isNotNull();
+      Assertions.assertThat(post.isPresent()).isTrue();
+      Assertions.assertThat(post.get().getId()).isEqualTo(validPostId);
+    }
+  }
+
+  @Nested
+  class GetPostList_Test {
+
+    private Post validPost = new Post(1);
+
+    private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID.getName(), 10, 1);
+
+    private int page;
+    private int limit;
+    private int offset;
+    private String sort;
 
 
-
-   @BeforeEach
-   public void setUp() {
+    @BeforeEach
+    public void setUp() {
       offset = (dto.getPage() - 1) * dto.getLimit();
       page = dto.getPage();
       limit = dto.getLimit();
       sort = dto.getSort();
-   }
+    }
 
-   @Test
-   public void getPostList_Throw_Exception() throws SQLException {
-     when(postRepository.findAll(sort, limit, offset)).thenThrow(SQLException.class);
-     assertThrows(SQLException.class, () -> postService.getPostList(dto));
-   }
+    @Test
+    public void getPostList_Throw_Exception() throws SQLException {
+      when(postRepository.findAll(sort, limit, offset)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postService.getPostList(dto));
+    }
 
-   @Test
-   public void getPostList_Return_Post_List() throws SQLException {
+    @Test
+    public void getPostList_Return_Post_List() throws SQLException {
 
-     List<Post> mockList = IntStream
-             .range(0, limit)
-             .mapToObj((i) -> validPost)
-             .collect(Collectors.toList());
+      List<Post> mockList = IntStream
+              .range(0, limit)
+              .mapToObj((i) -> validPost)
+              .collect(Collectors.toList());
 
-     when(postRepository.findAll(sort, limit, offset)).thenReturn(mockList);
+      when(postRepository.findAll(sort, limit, offset)).thenReturn(mockList);
 
-     List<Post> list = postService.getPostList(dto);
+      List<Post> list = postService.getPostList(dto);
 
-     verify(postRepository).findAll(sort, limit, offset);
-     Assertions.assertThat(list.size()).isEqualTo(mockList.size());
-   }
- }
+      verify(postRepository).findAll(sort, limit, offset);
+      Assertions.assertThat(list.size()).isEqualTo(mockList.size());
+    }
+  }
 
 }

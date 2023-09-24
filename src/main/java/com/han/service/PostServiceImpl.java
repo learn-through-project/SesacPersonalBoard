@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -32,4 +33,13 @@ public class PostServiceImpl implements PostService {
 
     return list;
   }
+
+  @Override
+  public Optional<Post> getPostDetail(int postId) throws SQLException {
+
+    Optional<Post> post = postRepository.findById(postId);
+
+    return post;
+  }
+
 }

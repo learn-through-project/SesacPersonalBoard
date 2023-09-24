@@ -14,9 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,7 +41,7 @@ public class PostControllerTest {
     @Test
     public void handelSqlException_Return_ResponseEntity() {
       String errorMsg = "error test";
-      ResponseEntity<String> res = postController.handelSqlException(new SQLException(errorMsg));
+      ResponseEntity<String> res = postController.handleSqlException(new SQLException(errorMsg));
       Assertions.assertThat(res.getBody()).contains(errorMsg);
       Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -47,12 +49,48 @@ public class PostControllerTest {
     @Test
     public void handelIllegalArgumentException_Return_ResponseEntity() {
       String errorMsg = "error test";
-      ResponseEntity<String> res = postController.handelIllegalArgumentException(new IllegalArgumentException(errorMsg));
+      ResponseEntity<String> res = postController.handleIllegalArgumentException(new IllegalArgumentException(errorMsg));
       Assertions.assertThat(res.getBody()).contains(errorMsg);
       Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
   }
 
+  @Nested
+  class GetPostDetail_Test {
+    private int validPostId = 1;
+    private int invalidPostId = 0;
+    private Post dummyPost = new Post(1);
+
+    @Test
+    public void getPostDetail_Throw_Exception() throws SQLException {
+      when(postService.getPostDetail(invalidPostId)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postService.getPostDetail(invalidPostId));
+
+      verify(postService).getPostDetail(invalidPostId);
+    }
+    @Test
+    public void getPostDetail_Return_Empty() throws SQLException {
+      int nonExistingId = 0;
+      when(postService.getPostDetail(nonExistingId)).thenReturn(Optional.empty());
+
+      Optional<Post> detail = postService.getPostDetail(nonExistingId);
+
+      verify(postService).getPostDetail(nonExistingId);
+      Assertions.assertThat(detail).isNotNull();
+      Assertions.assertThat(detail.isPresent()).isFalse();
+    }
+
+    @Test
+    public void getPostDetail_Return_Post() throws SQLException {
+      when(postService.getPostDetail(validPostId)).thenReturn(Optional.of(dummyPost));
+
+      Optional<Post> detail = postService.getPostDetail(validPostId);
+
+      Assertions.assertThat(detail).isNotNull();
+      Assertions.assertThat(detail.isPresent()).isTrue();
+      Assertions.assertThat(detail.get().getId()).isEqualTo(validPostId);
+    }
+  }
 
 
   @Nested
