@@ -43,4 +43,10 @@ public class PostControllerImpl implements PostController {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
   }
 
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<String> handelIllegalArgumentException(IllegalArgumentException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  }
+
 }

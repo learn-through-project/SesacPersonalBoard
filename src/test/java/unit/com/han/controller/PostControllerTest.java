@@ -34,13 +34,25 @@ public class PostControllerTest {
   private PostControllerImpl postController;
 
 
-  @Test
-  public void handelSqlException_Return_ResponseEntity() {
-    String errorMsg = "error test";
-    ResponseEntity<String> res = postController.handelSqlException(new SQLException(errorMsg));
-    Assertions.assertThat(res.getBody()).contains(errorMsg);
-    Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+  @Nested
+  class ExceptionHandler_Test {
+    @Test
+    public void handelSqlException_Return_ResponseEntity() {
+      String errorMsg = "error test";
+      ResponseEntity<String> res = postController.handelSqlException(new SQLException(errorMsg));
+      Assertions.assertThat(res.getBody()).contains(errorMsg);
+      Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void handelIllegalArgumentException_Return_ResponseEntity() {
+      String errorMsg = "error test";
+      ResponseEntity<String> res = postController.handelIllegalArgumentException(new IllegalArgumentException(errorMsg));
+      Assertions.assertThat(res.getBody()).contains(errorMsg);
+      Assertions.assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
   }
+
 
 
   @Nested

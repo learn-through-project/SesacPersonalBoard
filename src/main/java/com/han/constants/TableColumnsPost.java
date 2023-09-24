@@ -1,13 +1,32 @@
 package com.han.constants;
 
-public class TableColumnsPost {
-  public final static String ID = "id"; // int
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
-  public final static String AUTHOR = "author"; // int
+public enum TableColumnsPost {
 
-  public final static String TEXT_CONTENT = "text_content"; // String
+  ID("id", Integer.class),
+  AUTHOR("author", Integer.class),
+  TEXT_CONTENT("text_content", String.class),
+  CREATED_AT("created_at", LocalDateTime.class),
+  UPDATED_AT("updated_at", LocalDateTime.class);
 
-  public final static String CREATED_AT = "CREATED_AT"; // LocalDateTime
+  private final String columnName;
 
-  public final static String UPDATED_AT = "UPDATED_AT"; // LocalDateTime
+  TableColumnsPost(String columnName, Class<?> columnType) {
+    this.columnName = columnName;
+  }
+
+  public String getName() {
+    return columnName;
+  }
+
+  public static boolean isValidColumn(String targetColumn) {
+    return Arrays
+            .stream(TableColumnsPost.values())
+            .anyMatch((column) -> column.
+                    getName()
+                    .equalsIgnoreCase(targetColumn));
+
+  }
 }

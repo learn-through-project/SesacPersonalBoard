@@ -25,15 +25,18 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException {
-    String query = "SELECT * FROM posts order by ? desc limit ? offset ?";
+  public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException {
+    if (!isValidParamsForFindAll(orderBy, limit, offset)) {
+      throw new IllegalArgumentException("Invalid parameters: Please check parameter");
+    }
+
+    String query = "SELECT * FROM posts ORDER BY " + orderBy + " desc limit ? offset ?";
     List<Post> postList = new LinkedList<>();
 
     try (Connection conn = dataSource.getConnection()) {
       try (PreparedStatement statement = conn.prepareStatement(query)) {
-        statement.setString(1, orderBy);
-        statement.setInt(2, limit);
-        statement.setInt(3, offset);
+        statement.setInt(1, limit);
+        statement.setInt(2, offset);
 
         try (ResultSet rs = statement.executeQuery()) {
           while (rs.next()) {
@@ -44,6 +47,14 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     return postList;
+  }
+
+  private boolean isValidParamsForFindAll(String orderBy, int limit, int offset) {
+    boolean isValidSort = TableColumnsPost.isValidColumn(orderBy);
+    boolean isValidLimit = limit >= 0;
+    boolean isValidOffset = offset >= 0;
+
+    return isValidSort && isValidOffset && isValidLimit;
   }
 
   @Override
@@ -66,11 +77,11 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   private Post resultSetToPost(ResultSet rs) throws SQLException {
-    Integer id = rs.getInt(TableColumnsPost.ID);
-    Integer authorId = rs.getInt(TableColumnsPost.AUTHOR);
-    String textContent = rs.getString(TableColumnsPost.TEXT_CONTENT);
-    Timestamp createdAt = rs.getTimestamp(TableColumnsPost.CREATED_AT);
-    Timestamp updatedAt = rs.getTimestamp(TableColumnsPost.UPDATED_AT);
+    Integer id = rs.getInt(TableColumnsPost.ID.getName());
+    Integer authorId = rs.getInt(TableColumnsPost.AUTHOR.getName());
+    String textContent = rs.getString(TableColumnsPost.TEXT_CONTENT.getName());
+    Timestamp createdAt = rs.getTimestamp(TableColumnsPost.CREATED_AT.getName());
+    Timestamp updatedAt = rs.getTimestamp(TableColumnsPost.UPDATED_AT.getName());
 
     Post post = new Post();
     post.setId(id);

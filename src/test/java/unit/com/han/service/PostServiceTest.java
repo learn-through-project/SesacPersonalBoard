@@ -38,7 +38,7 @@ public class PostServiceTest {
 
    private Post validPost = new Post(1);
 
-   private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID, 10, 1);
+   private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID.getName(), 10, 1);
 
    private int page;
    private int limit;

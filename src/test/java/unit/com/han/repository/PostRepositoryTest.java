@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -41,8 +43,12 @@ public class PostRepositoryTest {
   @InjectMocks
   private PostRepositoryImpl postRepository;
 
+  private final List<String> skipSetUpMethods = List.of("findAll_Throw_IllegalArgumentException");
+
   @BeforeEach
-  public void setUp() throws SQLException {
+  public void setUp(TestInfo info) throws SQLException {
+    if (skipSetUpMethods.contains(info.getTestMethod().get().getName())) return;
+
     when(dataSource.getConnection()).thenReturn(connection);
     when(connection.prepareStatement(anyString())).thenReturn(statement);
   }
@@ -52,7 +58,19 @@ public class PostRepositoryTest {
 
     private int limit = 20;
     private int offset = 20;
-    private String orderBy = TableColumnsPost.ID;
+    private String orderBy = TableColumnsPost.ID.getName();
+
+    @Test
+    public void findAll_Throw_IllegalArgumentException() throws IllegalArgumentException {
+      String invalidColumnName = "hi";
+      Integer invalidLimit = limit;
+      Integer invalidOffset = offset;
+
+      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> postRepository.findAll(invalidColumnName, invalidLimit, invalidOffset));
+      assertEquals("Invalid parameters: Please check parameter", exception.getMessage());
+
+    }
+
     @Test
     public void findAll_Throw_SQLException_With_Invalid_Query() throws SQLException {
       when(statement.executeQuery()).thenThrow(SQLException.class);
@@ -66,9 +84,8 @@ public class PostRepositoryTest {
 
       List<Post> post = postRepository.findAll(orderBy, limit, offset);
 
-      verify(statement).setString(1, orderBy);
-      verify(statement).setInt(2, limit);
-      verify(statement).setInt(3, offset);
+      verify(statement).setInt(1, limit);
+      verify(statement).setInt(2, offset);
 
       Assertions.assertThat(post.size()).isEqualTo(0);
     }
@@ -77,14 +94,13 @@ public class PostRepositoryTest {
     public void findAll_Return_Post_List() throws SQLException {
       when(statement.executeQuery()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
-      when(resultSet.getInt(TableColumnsPost.ID)).thenReturn(2).thenReturn(1);
+      when(resultSet.getInt(TableColumnsPost.ID.getName())).thenReturn(2).thenReturn(1);
 
       List<Post> post = postRepository.findAll(orderBy, limit, offset);
 
-      verify(statement).setString(1, orderBy);
-      verify(statement).setInt(2, limit);
-      verify(statement).setInt(3, offset);
-      
+      verify(statement).setInt(1, limit);
+      verify(statement).setInt(2, offset);
+
       Assertions.assertThat(post.size()).isEqualTo(2);
       Assertions.assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
     }
@@ -117,7 +133,7 @@ public class PostRepositoryTest {
     public void findById_Return_Post() throws SQLException {
       when(statement.executeQuery()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(true).thenReturn(false);
-      when(resultSet.getInt(TableColumnsPost.ID)).thenReturn(existingPostId);
+      when(resultSet.getInt(TableColumnsPost.ID.getName())).thenReturn(existingPostId);
 
       Optional<Post> post = postRepository.findById(existingPostId);
 
