@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface PostRepository {
   public Optional<Post> findById(int postId) throws SQLException;
+  public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException;
 }

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Post {
   public static class Columns {
     public final static String ID = "id"; // int
-    
+
     public final static String AUTHOR = "author"; // int
 
     public final static String TEXT_CONTENT = "text_content"; // String

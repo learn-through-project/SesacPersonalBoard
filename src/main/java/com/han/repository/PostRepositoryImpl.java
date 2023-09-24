@@ -23,7 +23,27 @@ public class PostRepositoryImpl implements PostRepository {
     this.dataSource = dataSource;
   }
 
+  @Override
+  public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException {
+    String query = "SELECT * FROM posts order by ? desc limit ? offset ?";
+    List<Post> postList = new LinkedList<>();
 
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(query)) {
+        statement.setString(1, orderBy);
+        statement.setInt(2, limit);
+        statement.setInt(3, offset * limit);
+
+        try (ResultSet rs = statement.executeQuery()) {
+          while (rs.next()) {
+            postList.add(resultSetToPost(rs));
+          }
+        }
+      }
+    }
+
+    return postList;
+  }
 
   @Override
   public Optional<Post> findById(int postId) throws SQLException {
