@@ -43,7 +43,9 @@ public class PostRepositoryTest {
   @InjectMocks
   private PostRepositoryImpl postRepository;
 
-  private final List<String> skipSetUpMethods = List.of("findAll_Throw_IllegalArgumentException");
+  private final List<String> skipSetUpMethods = List.of(
+          "findAll_Throw_IllegalArgumentException"
+  );
 
   @BeforeEach
   public void setUp(TestInfo info) throws SQLException {
@@ -51,6 +53,50 @@ public class PostRepositoryTest {
 
     when(dataSource.getConnection()).thenReturn(connection);
     when(connection.prepareStatement(anyString())).thenReturn(statement);
+  }
+
+  @Nested
+  class Insert_Test {
+
+    int success = 1;
+    int fail = 0;
+    private Post dummyPost = new Post( 1, "this is sample");
+
+    @Test
+    public void insert_Throw_SQLException() throws SQLException {
+      when(statement.executeUpdate()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postRepository.insert(dummyPost));
+
+      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).executeUpdate();
+
+    }
+    @Test
+    public void insert_Return_False() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(fail);
+
+      boolean result = postRepository.insert(dummyPost);
+
+      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).executeUpdate();
+
+      Assertions.assertThat(result).isFalse();
+    }
+    @Test
+    public void insert_Return_True() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(success);
+
+      boolean result = postRepository.insert(dummyPost);
+
+      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).executeUpdate();
+
+      Assertions.assertThat(result).isTrue();
+    }
+
   }
 
   @Nested

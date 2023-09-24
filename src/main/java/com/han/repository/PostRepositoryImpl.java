@@ -24,6 +24,24 @@ public class PostRepositoryImpl implements PostRepository {
     this.dataSource = dataSource;
   }
 
+
+  @Override
+  public boolean insert(Post post) throws SQLException {
+    String insertQuery = "INSERT INTO posts (author, text_content) VALUES (?, ?)";
+    int result = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
+          statement.setInt(1, post.getAuthor());
+          statement.setString(2, post.getTextContent());
+
+          result = statement.executeUpdate();
+      }
+    }
+
+    return result > 0;
+  }
+
   @Override
   public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException {
     if (!isValidParamsForFindAll(orderBy, limit, offset)) {
