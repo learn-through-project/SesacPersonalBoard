@@ -23,4 +23,9 @@ public class Post {
   private String textContent;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+
+  public Post() {}
+  public Post (Integer id) {
+    this.id = id;
+  }
 }

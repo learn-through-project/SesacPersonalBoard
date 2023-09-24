@@ -32,7 +32,7 @@ public class PostRepositoryImpl implements PostRepository {
       try (PreparedStatement statement = conn.prepareStatement(query)) {
         statement.setString(1, orderBy);
         statement.setInt(2, limit);
-        statement.setInt(3, offset * limit);
+        statement.setInt(3, offset);
 
         try (ResultSet rs = statement.executeQuery()) {
           while (rs.next()) {

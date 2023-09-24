@@ -4,6 +4,7 @@ import com.han.model.Post;
 import com.han.repository.PostRepositoryImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,89 +46,87 @@ public class PostRepositoryTest {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
   }
 
-  @Test
-  public void findAll_Throw_SQLException_With_Invalid_Query() throws SQLException {
-    String orderBy = Post.Columns.ID;
-    int limit = 20;
-    int offset = 10;
+  @Nested
+  class FindAll_Test {
 
-    when(statement.executeQuery()).thenThrow(SQLException.class);
-    assertThrows(SQLException.class, () -> postRepository.findAll(orderBy, limit, offset));
+    private int limit = 20;
+    private int offset = 20;
+    private String orderBy = Post.Columns.ID;
+    @Test
+    public void findAll_Throw_SQLException_With_Invalid_Query() throws SQLException {
+      when(statement.executeQuery()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postRepository.findAll(orderBy, limit, offset));
+    }
+
+    @Test
+    public void findAll_Return_Empty_List() throws SQLException {
+      when(statement.executeQuery()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(false);
+
+      List<Post> post = postRepository.findAll(orderBy, limit, offset);
+
+      verify(statement).setString(1, orderBy);
+      verify(statement).setInt(2, limit);
+      verify(statement).setInt(3, offset);
+
+      Assertions.assertThat(post.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void findAll_Return_Post_List() throws SQLException {
+      when(statement.executeQuery()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+      when(resultSet.getInt(Post.Columns.ID)).thenReturn(2).thenReturn(1);
+
+      List<Post> post = postRepository.findAll(orderBy, limit, offset);
+
+      verify(statement).setString(1, orderBy);
+      verify(statement).setInt(2, limit);
+      verify(statement).setInt(3, offset);
+
+      Assertions.assertThat(post.size()).isEqualTo(2);
+      Assertions.assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
+    }
   }
 
-  @Test
-  public void findAll_Return_Empty_List() throws SQLException {
-    String orderBy = Post.Columns.ID;
-    int limit = 20;
-    int offset = 10;
+  @Nested
+  class FindById_Test {
+    private int nonExistingPostId = -1;
+    private int existingPostId = 1;
+    @Test
+    public void findById_Throw_SQLException_With_Invalid_Query() throws SQLException {
+      when(statement.executeQuery()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postRepository.findById(nonExistingPostId));
+    }
 
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(false);
+    @Test
+    public void findById_Return_Null() throws SQLException {
+      when(statement.executeQuery()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(false);
 
-    List<Post> post = postRepository.findAll(orderBy, limit, offset);
+      Optional<Post> post = postRepository.findById(nonExistingPostId);
 
-    verify(statement).setString(1, orderBy);
-    verify(statement).setInt(2, limit);
-    verify(statement).setInt(3, limit * offset);
+      verify(statement).setInt(1, nonExistingPostId);
+      Assertions.assertThat(post).isNotNull();
+      Assertions.assertThat(post.isPresent()).isFalse();
+    }
 
-    Assertions.assertThat(post.size()).isEqualTo(0);
-  }
 
-  @Test
-  public void findAll_Return_Post_List() throws SQLException {
-    String orderBy = Post.Columns.ID;
-    int limit = 20;
-    int offset = 10;
+    @Test
+    public void findById_Return_Post() throws SQLException {
+      when(statement.executeQuery()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(true).thenReturn(false);
+      when(resultSet.getInt(Post.Columns.ID)).thenReturn(existingPostId);
 
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
-    when(resultSet.getInt(Post.Columns.ID)).thenReturn(2).thenReturn(1);
+      Optional<Post> post = postRepository.findById(existingPostId);
 
-    List<Post> post = postRepository.findAll(orderBy, limit, offset);
-
-    verify(statement).setString(1, orderBy);
-    verify(statement).setInt(2, limit);
-    verify(statement).setInt(3, limit * offset);
-
-    Assertions.assertThat(post.size()).isEqualTo(2);
-    Assertions.assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
-  }
-
-  @Test
-  public void findById_Throw_SQLException_With_Invalid_Query() throws SQLException {
-    int nonExistingPostId = -1;
-    when(statement.executeQuery()).thenThrow(SQLException.class);
-    assertThrows(SQLException.class, () -> postRepository.findById(nonExistingPostId));
-  }
-
-  @Test
-  public void findById_Return_Null() throws SQLException {
-    int nonExistingPostId = -1;
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(false);
-
-    Optional<Post> post = postRepository.findById(nonExistingPostId);
-
-    verify(statement).setInt(1, nonExistingPostId);
-    Assertions.assertThat(post).isNotNull();
-    Assertions.assertThat(post.isPresent()).isFalse();
+      verify(statement).setInt(1, existingPostId);
+      Assertions.assertThat(post).isNotNull();
+      Assertions.assertThat(post.isPresent()).isTrue();
+      Assertions.assertThat(post.get().getId()).isEqualTo(existingPostId);
+    }
   }
 
 
-  @Test
-  public void findById_Return_Post() throws SQLException {
-    int existingPostId = 1;
-
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true).thenReturn(false);
-    when(resultSet.getInt(Post.Columns.ID)).thenReturn(existingPostId);
-
-    Optional<Post> post = postRepository.findById(existingPostId);
-
-    verify(statement).setInt(1, existingPostId);
-    Assertions.assertThat(post).isNotNull();
-    Assertions.assertThat(post.isPresent()).isTrue();
-    Assertions.assertThat(post.get().getId()).isEqualTo(existingPostId);
-  }
 
 }
