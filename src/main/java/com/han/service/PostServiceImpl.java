@@ -1,5 +1,6 @@
 package com.han.service;
 
+import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -21,6 +22,12 @@ public class PostServiceImpl implements PostService {
     this.postRepository = postRepository;
   }
 
+  @Override
+  public boolean createPost(PostCreateDto dto) throws SQLException {
+    Post post = fromDtoToPost(dto);
+    boolean result = postRepository.insert(post);
+    return result;
+  }
 
   @Override
   public List<Post> getPostList(PostListReqDto dto) throws SQLException {
@@ -38,6 +45,12 @@ public class PostServiceImpl implements PostService {
   public Optional<Post> getPostDetail(int postId) throws SQLException {
 
     Optional<Post> post = postRepository.findById(postId);
+
+    return post;
+  }
+
+  private Post fromDtoToPost(PostCreateDto dto) {
+    Post post = new Post(dto.getAuthor(), dto.getTextContent());
 
     return post;
   }
