@@ -1,9 +1,11 @@
 package unit.com.han.service;
 
+import com.han.dto.PostListReqDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
 import com.han.service.PostServiceImpl;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Nested;
@@ -32,18 +34,30 @@ public class PostServiceTest {
 
  @Nested
  class GetPostList_Test {
-   private int page = 1;
-   private int limit = 10;
-
-   private int offset = (page - 1) * limit;
-   private String sort = Post.Columns.ID;
 
    private Post validPost = new Post(1);
+
+   private PostListReqDto dto = new PostListReqDto(Post.Columns.ID, 10, 1);
+
+   private int page;
+   private int limit;
+   private int offset;
+   private String sort;
+
+
+
+   @BeforeEach
+   public void setUp() {
+      offset = (dto.getPage() - 1) * dto.getLimit();
+      page = dto.getPage();
+      limit = dto.getLimit();
+      sort = dto.getSort();
+   }
 
    @Test
    public void getPostList_Throw_Exception() throws SQLException {
      when(postRepository.findAll(sort, limit, offset)).thenThrow(SQLException.class);
-     assertThrows(SQLException.class, () -> postService.getPostList(sort, limit, page));
+     assertThrows(SQLException.class, () -> postService.getPostList(dto));
    }
 
    @Test
@@ -56,7 +70,7 @@ public class PostServiceTest {
 
      when(postRepository.findAll(sort, limit, offset)).thenReturn(mockList);
 
-     List<Post> list = postService.getPostList(sort, limit, page);
+     List<Post> list = postService.getPostList(dto);
 
      verify(postRepository).findAll(sort, limit, offset);
      Assertions.assertThat(list.size()).isEqualTo(mockList.size());

@@ -1,5 +1,6 @@
 package com.han.service;
 
+import com.han.dto.PostListReqDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,12 @@ public class PostServiceImpl implements PostService {
 
 
   @Override
-  public List<Post> getPostList(String sort, int limit, int page) throws SQLException {
-    int offset = (page - 1) * limit;
+  public List<Post> getPostList(PostListReqDto dto) throws SQLException {
+    String sort = dto.getSort();
+    int page = dto.getPage();
+    int limit = dto.getLimit();
 
+    int offset = (page - 1) * limit;
     List<Post> list = postRepository.findAll(sort, limit, offset);
 
     return list;
