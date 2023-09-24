@@ -1,6 +1,7 @@
 package com.han.controller;
 
 import com.han.constants.EndPoint;
+import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -21,7 +22,6 @@ import java.util.Optional;
 @Log4j2
 @RestController
 @Validated
-@RequestMapping(EndPoint.POST)
 public class PostControllerImpl implements PostController {
 
   private final PostService postService;
@@ -31,17 +31,24 @@ public class PostControllerImpl implements PostController {
     this.postService = postService;
   }
 
+  @Override
+  @PostMapping(EndPoint.POST)
+  public ResponseEntity<Boolean> createPost(@RequestBody @Valid PostCreateDto dto) throws SQLException {
+    boolean result = postService.createPost(dto);
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
 
   @Override
-  @GetMapping()
+  @GetMapping(EndPoint.POST)
   public ResponseEntity<List<Post>> getPostList(@Valid PostListReqDto reqDto) throws SQLException {
-      List<Post> postList = postService.getPostList(reqDto);
-      return new ResponseEntity<>(postList, HttpStatus.OK);
+    List<Post> postList = postService.getPostList(reqDto);
+    return new ResponseEntity<>(postList, HttpStatus.OK);
   }
+
   @Override
-  @GetMapping("/{postId}")
+  @GetMapping(EndPoint.POST_DETAIL)
   public ResponseEntity<Post> getPostDetail(@PathVariable @Min(1) int postId) throws SQLException {
-  System.out.println(postId);
+    System.out.println(postId);
     Optional<Post> post = postService.getPostDetail(postId);
     Post body = post.orElse(null);
     return new ResponseEntity<>(body, HttpStatus.OK);

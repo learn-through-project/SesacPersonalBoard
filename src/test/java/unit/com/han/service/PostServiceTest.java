@@ -1,6 +1,7 @@
 package unit.com.han.service;
 
 import com.han.constants.TableColumnsPost;
+import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -20,7 +21,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +33,37 @@ public class PostServiceTest {
 
   @InjectMocks
   private PostServiceImpl postService;
+
+  @Nested
+  class CreatePost_Test {
+
+    private PostCreateDto dummyDto = new PostCreateDto(1, "this is sample");
+    private Post dummyPost = new Post(1, "this is sample");
+
+    @Test
+    public void createPost_Throw_Exception() throws SQLException {
+      when(postRepository.insert(dummyPost)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postService.createPost(dummyDto));
+
+      verify(postRepository).insert(dummyPost);
+    }
+    @Test
+    public void createPost_Return_False() throws SQLException {
+      when(postRepository.insert(dummyPost)).thenReturn(false);
+      boolean isSuccess = postService.createPost(dummyDto);
+
+      verify(postRepository).insert(dummyPost);
+      Assertions.assertThat(isSuccess).isFalse();
+    }
+    @Test
+    public void createPost_Return_True() throws SQLException {
+      when(postRepository.insert(dummyPost)).thenReturn(true);
+      boolean isSuccess = postService.createPost(dummyDto);
+
+      verify(postRepository).insert(dummyPost);
+      Assertions.assertThat(isSuccess).isTrue();
+    }
+  }
 
   @Nested
   class GetPostDetail_Test {
