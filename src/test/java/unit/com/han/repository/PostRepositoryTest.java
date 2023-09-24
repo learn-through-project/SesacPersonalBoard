@@ -1,5 +1,6 @@
 package unit.com.han.repository;
 
+import com.han.constants.TableColumnsPost;
 import com.han.model.Post;
 import com.han.repository.PostRepositoryImpl;
 import org.assertj.core.api.Assertions;
@@ -51,7 +52,7 @@ public class PostRepositoryTest {
 
     private int limit = 20;
     private int offset = 20;
-    private String orderBy = Post.Columns.ID;
+    private String orderBy = TableColumnsPost.ID;
     @Test
     public void findAll_Throw_SQLException_With_Invalid_Query() throws SQLException {
       when(statement.executeQuery()).thenThrow(SQLException.class);
@@ -76,14 +77,14 @@ public class PostRepositoryTest {
     public void findAll_Return_Post_List() throws SQLException {
       when(statement.executeQuery()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
-      when(resultSet.getInt(Post.Columns.ID)).thenReturn(2).thenReturn(1);
+      when(resultSet.getInt(TableColumnsPost.ID)).thenReturn(2).thenReturn(1);
 
       List<Post> post = postRepository.findAll(orderBy, limit, offset);
 
       verify(statement).setString(1, orderBy);
       verify(statement).setInt(2, limit);
       verify(statement).setInt(3, offset);
-
+      
       Assertions.assertThat(post.size()).isEqualTo(2);
       Assertions.assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
     }
@@ -116,7 +117,7 @@ public class PostRepositoryTest {
     public void findById_Return_Post() throws SQLException {
       when(statement.executeQuery()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(true).thenReturn(false);
-      when(resultSet.getInt(Post.Columns.ID)).thenReturn(existingPostId);
+      when(resultSet.getInt(TableColumnsPost.ID)).thenReturn(existingPostId);
 
       Optional<Post> post = postRepository.findById(existingPostId);
 

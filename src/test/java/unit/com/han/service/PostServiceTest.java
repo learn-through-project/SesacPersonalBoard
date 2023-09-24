@@ -1,5 +1,6 @@
 package unit.com.han.service;
 
+import com.han.constants.TableColumnsPost;
 import com.han.dto.PostListReqDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -37,7 +38,7 @@ public class PostServiceTest {
 
    private Post validPost = new Post(1);
 
-   private PostListReqDto dto = new PostListReqDto(Post.Columns.ID, 10, 1);
+   private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID, 10, 1);
 
    private int page;
    private int limit;

@@ -1,5 +1,6 @@
 package com.han.repository;
 
+import com.han.constants.TableColumnsPost;
 import com.han.model.Post;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,11 +66,11 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   private Post resultSetToPost(ResultSet rs) throws SQLException {
-    Integer id = rs.getInt(Post.Columns.ID);
-    Integer authorId = rs.getInt(Post.Columns.AUTHOR);
-    String textContent = rs.getString(Post.Columns.TEXT_CONTENT);
-    Timestamp createdAt = rs.getTimestamp(Post.Columns.CREATED_AT);
-    Timestamp updatedAt = rs.getTimestamp(Post.Columns.UPDATED_AT);
+    Integer id = rs.getInt(TableColumnsPost.ID);
+    Integer authorId = rs.getInt(TableColumnsPost.AUTHOR);
+    String textContent = rs.getString(TableColumnsPost.TEXT_CONTENT);
+    Timestamp createdAt = rs.getTimestamp(TableColumnsPost.CREATED_AT);
+    Timestamp updatedAt = rs.getTimestamp(TableColumnsPost.UPDATED_AT);
 
     Post post = new Post();
     post.setId(id);
