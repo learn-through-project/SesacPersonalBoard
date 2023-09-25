@@ -27,8 +27,8 @@ public class PostRepositoryImpl implements PostRepository {
   @Override
   public boolean update(Post post) throws SQLException {
     String updateQuery = "UPDATE posts SET "
-            + TableColumnsPost.AUTHOR + " = ?"
-            + TableColumnsPost.TEXT_CONTENT + " = ?"
+            + TableColumnsPost.AUTHOR + " = ? , "
+            + TableColumnsPost.TEXT_CONTENT + " = ? "
             + " WHERE "+ TableColumnsPost.ID + " = ?";
 
     int result = 0;
