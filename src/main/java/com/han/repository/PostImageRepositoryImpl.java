@@ -13,12 +13,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class PostImagesRepositoryImpl implements PostImagesRepository {
+public class PostImageRepositoryImpl implements PostImageRepository {
 
   private DataSource dataSource;
 
   @Autowired
-  public PostImagesRepositoryImpl(DataSource dataSource) {
+  public PostImageRepositoryImpl(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 

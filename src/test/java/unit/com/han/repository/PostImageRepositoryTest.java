@@ -3,7 +3,7 @@ package unit.com.han.repository;
 
 import com.han.constants.tablesColumns.TableColumnsPostImages;
 import com.han.model.PostImage;
-import com.han.repository.PostImagesRepositoryImpl;
+import com.han.repository.PostImageRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class PostImageRepositoryTest {
   private ResultSet resultSet;
 
   @InjectMocks
-  private PostImagesRepositoryImpl postImagesRepository;
+  private PostImageRepositoryImpl postImagesRepository;
 
   private final List<String> skipSetUpMethods = List.of(
           ""
