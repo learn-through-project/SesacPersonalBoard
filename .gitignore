@@ -3,3 +3,7 @@
 .idea/
 
 build/
+
+src/main/resources/firebaseKey.json
+src/main/resources/application.properties
+src/main/resources/application-test.properties
