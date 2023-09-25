@@ -3,7 +3,6 @@ package unit.com.han.repository;
 import com.han.constants.TableColumnsPost;
 import com.han.model.Post;
 import com.han.repository.PostRepositoryImpl;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,6 +56,51 @@ public class PostRepositoryTest {
   }
 
   @Nested
+  class Update_Test {
+    int success = 1;
+    int fail = 0;
+    private Post dummyPost = new Post( 1,1, "this is sample00");
+
+    @Test
+    public void update_Throws_Exception() throws SQLException {
+      when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+      assertThrows(SQLException.class, () -> postRepository.update(dummyPost));
+
+      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).setInt(3, dummyPost.getId());
+    }
+
+    @Test
+    public void update_Return_False() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(fail);
+
+      boolean result = postRepository.update(dummyPost);
+
+      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).setInt(3, dummyPost.getId());
+
+      assertThat(result).isFalse();
+    }
+    @Test
+    public void update_Return_True() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(success);
+
+      boolean result = postRepository.update(dummyPost);
+
+      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).setInt(3, dummyPost.getId());
+
+      assertThat(result).isTrue();
+    }
+
+
+  }
+
+  @Nested
   class Insert_Test {
 
     int success = 1;
@@ -82,7 +127,7 @@ public class PostRepositoryTest {
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
-      Assertions.assertThat(result).isFalse();
+      assertThat(result).isFalse();
     }
     @Test
     public void insert_Return_True() throws SQLException {
@@ -94,7 +139,7 @@ public class PostRepositoryTest {
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
-      Assertions.assertThat(result).isTrue();
+      assertThat(result).isTrue();
     }
 
   }
@@ -133,7 +178,7 @@ public class PostRepositoryTest {
       verify(statement).setInt(1, limit);
       verify(statement).setInt(2, offset);
 
-      Assertions.assertThat(post.size()).isEqualTo(0);
+      assertThat(post.size()).isEqualTo(0);
     }
 
     @Test
@@ -147,8 +192,8 @@ public class PostRepositoryTest {
       verify(statement).setInt(1, limit);
       verify(statement).setInt(2, offset);
 
-      Assertions.assertThat(post.size()).isEqualTo(2);
-      Assertions.assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
+      assertThat(post.size()).isEqualTo(2);
+      assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
     }
   }
 
@@ -170,8 +215,8 @@ public class PostRepositoryTest {
       Optional<Post> post = postRepository.findById(nonExistingPostId);
 
       verify(statement).setInt(1, nonExistingPostId);
-      Assertions.assertThat(post).isNotNull();
-      Assertions.assertThat(post.isPresent()).isFalse();
+      assertThat(post).isNotNull();
+      assertThat(post.isPresent()).isFalse();
     }
 
 
@@ -184,9 +229,9 @@ public class PostRepositoryTest {
       Optional<Post> post = postRepository.findById(existingPostId);
 
       verify(statement).setInt(1, existingPostId);
-      Assertions.assertThat(post).isNotNull();
-      Assertions.assertThat(post.isPresent()).isTrue();
-      Assertions.assertThat(post.get().getId()).isEqualTo(existingPostId);
+      assertThat(post).isNotNull();
+      assertThat(post.isPresent()).isTrue();
+      assertThat(post.get().getId()).isEqualTo(existingPostId);
     }
   }
 

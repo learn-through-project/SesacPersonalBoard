@@ -23,4 +23,10 @@ public class Post {
     this.author = author;
     this.textContent = textContent;
   }
+
+  public Post (Integer postId, Integer author, String textContent) {
+    this.id = postId;
+    this.author = author;
+    this.textContent = textContent;
+  }
 }

@@ -10,4 +10,5 @@ public interface PostRepository {
   public Optional<Post> findById(int postId) throws SQLException;
   public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException;
   public boolean insert(Post post) throws SQLException;
+  public boolean update(Post post) throws SQLException;
 }
