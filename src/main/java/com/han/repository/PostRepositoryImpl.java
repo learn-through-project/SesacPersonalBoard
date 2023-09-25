@@ -92,7 +92,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     String query = "SELECT * FROM "
             + TableColumnsPost.TABLE.getName()
-            + " ORDER BY " + orderBy + order.name()
+            + " ORDER BY " + orderBy + " " + order.toString()
             + " limit ? "
             + " offset ?";
     
