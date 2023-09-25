@@ -55,7 +55,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     try (Connection conn = dataSource.getConnection()) {
       try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
-        statement.setInt(1, post.getAuthor());
+        statement.setInt(1, post.getUserId());
         statement.setString(2, post.getTextContent());
         statement.setInt(3, post.getId());
 
@@ -74,7 +74,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     try (Connection conn = dataSource.getConnection()) {
       try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
-          statement.setInt(1, post.getAuthor());
+          statement.setInt(1, post.getUserId());
           statement.setString(2, post.getTextContent());
 
           result = statement.executeUpdate();
@@ -150,7 +150,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     Post post = new Post();
     post.setId(id);
-    post.setAuthor(authorId);
+    post.setUserId(authorId);
     post.setTextContent(textContent);
     post.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
     post.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);

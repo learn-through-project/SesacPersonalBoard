@@ -102,7 +102,7 @@ public class PostRepositoryTest {
 
       assertThrows(SQLException.class, () -> postRepository.update(dummyPost));
 
-      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).setInt(3, dummyPost.getId());
     }
@@ -113,7 +113,7 @@ public class PostRepositoryTest {
 
       boolean result = postRepository.update(dummyPost);
 
-      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).setInt(3, dummyPost.getId());
 
@@ -125,7 +125,7 @@ public class PostRepositoryTest {
 
       boolean result = postRepository.update(dummyPost);
 
-      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).setInt(3, dummyPost.getId());
 
@@ -147,7 +147,7 @@ public class PostRepositoryTest {
       when(statement.executeUpdate()).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postRepository.insert(dummyPost));
 
-      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
@@ -158,7 +158,7 @@ public class PostRepositoryTest {
 
       boolean result = postRepository.insert(dummyPost);
 
-      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
@@ -170,7 +170,7 @@ public class PostRepositoryTest {
 
       boolean result = postRepository.insert(dummyPost);
 
-      verify(statement).setInt(1, dummyPost.getAuthor());
+      verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 

@@ -7,7 +7,7 @@ public enum TableColumnsPost {
 
   TABLE("posts", String.class),
   ID("id", Integer.class),
-  AUTHOR("author", Integer.class),
+  AUTHOR("user_id", Integer.class),
   TEXT_CONTENT("text_content", String.class),
   CREATED_AT("created_at", LocalDateTime.class),
   UPDATED_AT("updated_at", LocalDateTime.class);
