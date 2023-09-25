@@ -3,6 +3,7 @@ package unit.com.han.service;
 import com.han.constants.TableColumnsPost;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
+import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
 import com.han.service.PostServiceImpl;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,6 +36,42 @@ public class PostServiceTest {
   @InjectMocks
   private PostServiceImpl postService;
 
+  @Nested
+  class EditPost_Test {
+
+    boolean success = true;
+
+    boolean fail = false;
+    private PostUpdateDto dummyDto = new PostUpdateDto(1, 1, "this is update");
+    private Post dummyPost = new Post(dummyDto.getId(), dummyDto.getAuthor(), dummyDto.getTextContent());
+
+    @Test
+    public void editPost_Throw_Exception() throws SQLException {
+      when(postRepository.update(dummyPost)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postService.editPost(dummyDto));
+
+      verify(postRepository).update(dummyPost);
+    }
+    @Test
+    public void editPost_Return_False() throws SQLException {
+      when(postRepository.update(dummyPost)).thenReturn(fail);
+
+      boolean result = postService.editPost(dummyDto);
+
+      verify(postRepository).update(dummyPost);
+      assertThat(result).isFalse();
+    }
+    @Test
+    public void editPost_Return_True() throws SQLException {
+      when(postRepository.update(dummyPost)).thenReturn(success);
+
+      boolean result = postService.editPost(dummyDto);
+
+      verify(postRepository).update(dummyPost);
+      assertThat(result).isTrue();
+    }
+
+  }
   @Nested
   class CreatePost_Test {
 
@@ -53,7 +91,7 @@ public class PostServiceTest {
       boolean isSuccess = postService.createPost(dummyDto);
 
       verify(postRepository).insert(dummyPost);
-      Assertions.assertThat(isSuccess).isFalse();
+      assertThat(isSuccess).isFalse();
     }
     @Test
     public void createPost_Return_True() throws SQLException {
@@ -61,7 +99,7 @@ public class PostServiceTest {
       boolean isSuccess = postService.createPost(dummyDto);
 
       verify(postRepository).insert(dummyPost);
-      Assertions.assertThat(isSuccess).isTrue();
+      assertThat(isSuccess).isTrue();
     }
   }
 
@@ -87,8 +125,8 @@ public class PostServiceTest {
       Optional<Post> post = postService.getPostDetail(nonExistingId);
 
       verify(postRepository).findById(nonExistingId);
-      Assertions.assertThat(post).isNotNull();
-      Assertions.assertThat(post.isPresent()).isFalse();
+      assertThat(post).isNotNull();
+      assertThat(post.isPresent()).isFalse();
     }
 
     @Test
@@ -98,9 +136,9 @@ public class PostServiceTest {
       Optional<Post> post = postService.getPostDetail(validPostId);
 
       verify(postRepository).findById(validPostId);
-      Assertions.assertThat(post).isNotNull();
-      Assertions.assertThat(post.isPresent()).isTrue();
-      Assertions.assertThat(post.get().getId()).isEqualTo(validPostId);
+      assertThat(post).isNotNull();
+      assertThat(post.isPresent()).isTrue();
+      assertThat(post.get().getId()).isEqualTo(validPostId);
     }
   }
 
@@ -144,7 +182,7 @@ public class PostServiceTest {
       List<Post> list = postService.getPostList(dto);
 
       verify(postRepository).findAll(sort, limit, offset);
-      Assertions.assertThat(list.size()).isEqualTo(mockList.size());
+      assertThat(list.size()).isEqualTo(mockList.size());
     }
   }
 
