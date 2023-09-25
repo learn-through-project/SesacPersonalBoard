@@ -1,5 +1,6 @@
 package com.han.repository;
 
+import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.constants.tablesColumns.TableColumnsPostImages;
 import com.han.model.PostImage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,27 @@ public class PostImagesRepositoryImpl implements PostImagesRepository {
   @Autowired
   public PostImagesRepositoryImpl(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+
+  @Override
+  public boolean update(PostImage image) throws SQLException {
+    String updateQuery = "UPDATE " + TableColumnsPostImages.TABLE.getName() + " SET "
+            + TableColumnsPostImages.POST_ID.getName() + " = ? , "
+            + TableColumnsPostImages.URL.getName() + " = ? "
+            + " WHERE " + TableColumnsPostImages.ID.getName() + " = ? ";
+
+    int result = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+        statement.setInt(1, image.getPostId());
+        statement.setString(2, image.getUrl());
+        statement.setInt(3, image.getId());
+        result = statement.executeUpdate();
+      }
+    }
+
+    return result > 0;
   }
 
   @Override
