@@ -31,7 +31,7 @@ public class FirebaseConfig {
 
       FirebaseApp.initializeApp(options);
     } catch (IOException ex) {
-      log.error("Exception in fierbase init: >> " + ex.getMessage());
+      log.error("Exception in firebase init: >> " + ex.getMessage());
     }
   }
 }
