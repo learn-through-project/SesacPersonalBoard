@@ -9,7 +9,7 @@ public class Post {
 
 
   private Integer id;
-  private Integer author;
+  private Integer userId;
   private String textContent;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -19,14 +19,14 @@ public class Post {
     this.id = id;
   }
 
-  public Post (Integer author, String textContent) {
-    this.author = author;
+  public Post (Integer userId, String textContent) {
+    this.userId = userId;
     this.textContent = textContent;
   }
 
-  public Post (Integer postId, Integer author, String textContent) {
+  public Post (Integer postId, Integer userId, String textContent) {
     this.id = postId;
-    this.author = author;
+    this.userId = userId;
     this.textContent = textContent;
   }
 }
