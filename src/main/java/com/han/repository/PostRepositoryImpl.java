@@ -25,6 +25,24 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
+  public boolean deletePermanently(int postId) throws SQLException {
+    String deleteQuery = "DELETE FROM "+ TableColumnsPost.TABLE +" WHERE "
+            + TableColumnsPost.ID + " = ?";
+
+    int result = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
+        statement.setInt(1, postId);
+        result =  statement.executeUpdate();
+      }
+    }
+
+    return result > 0;
+
+  }
+
+  @Override
   public boolean update(Post post) throws SQLException {
     String updateQuery = "UPDATE posts SET "
             + TableColumnsPost.AUTHOR + " = ? , "

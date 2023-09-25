@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 public enum TableColumnsPost {
 
+  TABLE("posts", String.class),
   ID("id", Integer.class),
   AUTHOR("author", Integer.class),
   TEXT_CONTENT("text_content", String.class),
