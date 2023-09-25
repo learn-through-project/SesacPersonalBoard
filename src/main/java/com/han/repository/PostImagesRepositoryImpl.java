@@ -23,6 +23,25 @@ public class PostImagesRepositoryImpl implements PostImagesRepository {
   }
 
   @Override
+  public boolean insert(PostImage image) throws SQLException {
+    String insertQuery = "INSERT INTO "
+            + TableColumnsPostImages.TABLE.getName()
+            + " VALUES (?, ?)";
+
+    int result = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
+        statement.setInt(1, image.getPostId());
+        statement.setString(2, image.getUrl());
+        result = statement.executeUpdate();
+      }
+    }
+
+    return result > 0;
+  }
+
+  @Override
   public List<PostImage> findByPostId(int postId) throws SQLException {
     String selectSql = "SELECT * FROM "
             + TableColumnsPostImages.TABLE.getName()
@@ -36,7 +55,7 @@ public class PostImagesRepositoryImpl implements PostImagesRepository {
 
         try (ResultSet rs = statement.executeQuery()) {
           while (rs.next()) {
-            imageList.add(resultSetToPostImage(rs)) ;
+            imageList.add(resultSetToPostImage(rs));
           }
         }
 

@@ -59,6 +59,47 @@ public class PostImageRepositoryTest {
   }
 
   @Nested
+  class Insert_Test {
+
+    private int  success = 1;
+    private int  fail = 0;
+    private PostImage dummyImage = new PostImage(1, 1, "http://");
+
+    @Test
+    public void insert_Throws_Exception() throws SQLException {
+
+      when(statement.executeUpdate()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postImagesRepository.insert(dummyImage));
+
+      verify(statement).executeUpdate();
+      verify(statement).setInt(1, dummyImage.getPostId());
+      verify(statement).setString(2, dummyImage.getUrl());
+    }
+    @Test
+    public void insert_Return_Fail() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(fail);
+
+      boolean result = postImagesRepository.insert(dummyImage);
+
+      verify(statement).executeUpdate();
+      verify(statement).setInt(1, dummyImage.getPostId());
+      verify(statement).setString(2, dummyImage.getUrl());
+      assertThat(result).isFalse();
+    }
+    @Test
+    public void insert_Return_Success() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(success);
+
+      boolean result = postImagesRepository.insert(dummyImage);
+
+      verify(statement).executeUpdate();
+      verify(statement).setInt(1, dummyImage.getPostId());
+      verify(statement).setString(2, dummyImage.getUrl());
+      assertThat(result).isTrue();
+    }
+  }
+
+  @Nested
   class FindByPostId_Test {
     private int postId = 1;
 
@@ -103,7 +144,7 @@ public class PostImageRepositoryTest {
   class FindById_Test {
     private int imageId = 1;
 
-    private PostImage dummyImage = new PostImage(imageId, 1, "");
+    private PostImage dummyImage = new PostImage(imageId);
 
     @Test
     public void findById_Throw_Exception() throws SQLException {
