@@ -1,7 +1,7 @@
 package com.han.repository;
 
 import com.han.constants.OrderType;
-import com.han.constants.TableColumnsPost;
+import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.model.Post;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;

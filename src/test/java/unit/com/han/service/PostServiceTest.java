@@ -1,7 +1,7 @@
 package unit.com.han.service;
 
 import com.han.constants.OrderType;
-import com.han.constants.TableColumnsPost;
+import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
 import com.han.dto.PostUpdateDto;

@@ -1,4 +1,4 @@
-package com.han.constants;
+package com.han.constants.tablesColumns;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
