@@ -66,7 +66,7 @@ public class PostServiceImpl implements PostService {
   }
 
   private Post fromCreateDtoToPost(PostCreateDto dto) {
-    Post post = new Post(dto.getAuthor(), dto.getTextContent());
+    Post post = new Post(dto.getUserId(), dto.getTextContent());
 
     return post;
   }

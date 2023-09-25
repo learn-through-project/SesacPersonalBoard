@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class PostCreateDto {
 
   @NotNull
-  private final int author;
+  private final int userId;
 
   @NotEmpty
   private final String textContent;
