@@ -1,5 +1,6 @@
 package com.han.repository;
 
+import com.han.constants.OrderType;
 import com.han.constants.TableColumnsPost;
 import com.han.model.Post;
 import lombok.extern.log4j.Log4j2;
@@ -84,12 +85,17 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public List<Post> findAll(String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException {
+  public List<Post> findAll(OrderType order, String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException {
     if (!isValidParamsForFindAll(orderBy, limit, offset)) {
       throw new IllegalArgumentException("Invalid parameters: Please check parameter");
     }
 
-    String query = "SELECT * FROM posts ORDER BY " + orderBy + " desc limit ? offset ?";
+    String query = "SELECT * FROM "
+            + TableColumnsPost.TABLE.getName()
+            + " ORDER BY " + orderBy + order.name()
+            + " limit ? "
+            + " offset ?";
+    
     List<Post> postList = new LinkedList<>();
 
     try (Connection conn = dataSource.getConnection()) {
