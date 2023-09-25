@@ -3,6 +3,7 @@ package unit.com.han.controller;
 import com.han.controller.PostControllerImpl;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
+import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,21 +38,20 @@ public class PostControllerTest {
 
 
   @Nested
-  class ExceptionHandler_Test {
-    @Test
-    public void handelSqlException_Return_ResponseEntity() {
-      String errorMsg = "error test";
-      ResponseEntity<String> res = postController.handleSqlException(new SQLException(errorMsg));
-      assertThat(res.getBody()).contains(errorMsg);
-      assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
+  class EditPost_Test {
+    boolean success = true;
+
+    boolean fail = false;
+    private PostUpdateDto dummyDto = new PostUpdateDto(1, 1, "sample");
 
     @Test
-    public void handelIllegalArgumentException_Return_ResponseEntity() {
-      String errorMsg = "error test";
-      ResponseEntity<String> res = postController.handleIllegalArgumentException(new IllegalArgumentException(errorMsg));
-      assertThat(res.getBody()).contains(errorMsg);
-      assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    public void editPost_Return_True() throws SQLException {
+      when(postService.editPost(dummyDto)).thenReturn(success);
+
+      ResponseEntity<Boolean> result = postController.editPost(dummyDto);
+
+      assertThat(result.getBody()).isEqualTo(success);
+      assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
   }
 
@@ -68,6 +68,7 @@ public class PostControllerTest {
 
       verify(postService).getPostDetail(invalidPostId);
     }
+
     @Test
     public void getPostDetail_Return_Empty() throws SQLException {
       int nonExistingId = 0;
@@ -107,6 +108,7 @@ public class PostControllerTest {
 
       verify(postService).createPost(dto);
     }
+
     @Test
     public void createPost_Return_False() throws SQLException {
       when(postService.createPost(dto)).thenReturn(fail);
@@ -117,6 +119,7 @@ public class PostControllerTest {
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
       assertThat(result.getBody()).isEqualTo(fail);
     }
+
     @Test
     public void createPost_Return_True() throws SQLException {
 
@@ -158,6 +161,25 @@ public class PostControllerTest {
       verify(postService).getPostList(reqDto);
       assertThat(res.hasBody()).isTrue();
       assertThat(res.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+  }
+
+  @Nested
+  class ExceptionHandler_Test {
+    @Test
+    public void handelSqlException_Return_ResponseEntity() {
+      String errorMsg = "error test";
+      ResponseEntity<String> res = postController.handleSqlException(new SQLException(errorMsg));
+      assertThat(res.getBody()).contains(errorMsg);
+      assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void handelIllegalArgumentException_Return_ResponseEntity() {
+      String errorMsg = "error test";
+      ResponseEntity<String> res = postController.handleIllegalArgumentException(new IllegalArgumentException(errorMsg));
+      assertThat(res.getBody()).contains(errorMsg);
+      assertThat(res.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
   }
 

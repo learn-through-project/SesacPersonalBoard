@@ -3,6 +3,7 @@ package com.han.controller;
 import com.han.constants.EndPoint;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
+import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.service.PostService;
 import jakarta.validation.Valid;
@@ -32,6 +33,13 @@ public class PostControllerImpl implements PostController {
   }
 
   @Override
+  @PutMapping(EndPoint.POST)
+  public ResponseEntity<Boolean> editPost(@RequestBody @Valid PostUpdateDto dto) throws SQLException {
+    boolean result = postService.editPost(dto);
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+  @Override
   @PostMapping(EndPoint.POST)
   public ResponseEntity<Boolean> createPost(@RequestBody @Valid PostCreateDto dto) throws SQLException {
     boolean result = postService.createPost(dto);
@@ -48,7 +56,6 @@ public class PostControllerImpl implements PostController {
   @Override
   @GetMapping(EndPoint.POST_DETAIL)
   public ResponseEntity<Post> getPostDetail(@PathVariable @Min(1) int postId) throws SQLException {
-    System.out.println(postId);
     Optional<Post> post = postService.getPostDetail(postId);
     Post body = post.orElse(null);
     return new ResponseEntity<>(body, HttpStatus.OK);

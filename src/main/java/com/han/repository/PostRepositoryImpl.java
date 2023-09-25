@@ -24,6 +24,29 @@ public class PostRepositoryImpl implements PostRepository {
     this.dataSource = dataSource;
   }
 
+  @Override
+  public boolean update(Post post) throws SQLException {
+    String updateQuery = "UPDATE posts SET "
+            + TableColumnsPost.AUTHOR + " = ? , "
+            + TableColumnsPost.TEXT_CONTENT + " = ? "
+            + " WHERE "+ TableColumnsPost.ID + " = ?";
+
+    int result = 0;
+
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+        statement.setInt(1, post.getAuthor());
+        statement.setString(2, post.getTextContent());
+        statement.setInt(3, post.getId());
+
+        result = statement.executeUpdate();
+      }
+    }
+
+
+    return result > 0;
+  }
 
   @Override
   public boolean insert(Post post) throws SQLException {
