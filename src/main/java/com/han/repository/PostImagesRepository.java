@@ -11,4 +11,5 @@ public interface PostImagesRepository {
   public List<PostImage> findByPostId(int postId) throws SQLException;
   public boolean insert(PostImage image) throws SQLException;
   public boolean update(PostImage image) throws SQLException;
+  public boolean deleteById(int imageId) throws SQLException;
 }

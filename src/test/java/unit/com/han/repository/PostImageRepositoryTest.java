@@ -57,7 +57,42 @@ public class PostImageRepositoryTest {
     when(dataSource.getConnection()).thenReturn(connection);
     when(connection.prepareStatement(anyString())).thenReturn(statement);
   }
-  
+
+  @Nested
+  class DeleteById_Test {
+
+    private int  success = 1;
+    private int  fail = 0;
+    private int imageId = 1;
+
+    @Test
+    public void deleteById_Throws_Exception() throws SQLException {
+      when(statement.executeUpdate()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postImagesRepository.deleteById(imageId));
+
+      verify(statement).executeUpdate();
+      verify(statement).setInt(1, imageId);
+    }
+
+    @Test
+    public void deleteById_Return_Fail() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(fail);
+      boolean result = postImagesRepository.deleteById(imageId);
+
+      verify(statement).setInt(1, imageId);
+      verify(statement).executeUpdate();
+      assertThat(result).isFalse();
+    }
+    @Test
+    public void deleteById_Return_Success() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(success);
+      boolean result = postImagesRepository.deleteById(imageId);
+
+      verify(statement).setInt(1, imageId);
+      verify(statement).executeUpdate();
+      assertThat(result).isTrue();
+    }
+  }
   @Nested
   class Update_Test {
     private int  success = 1;

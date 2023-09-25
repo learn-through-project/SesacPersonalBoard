@@ -1,6 +1,5 @@
 package com.han.repository;
 
-import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.constants.tablesColumns.TableColumnsPostImages;
 import com.han.model.PostImage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,24 @@ public class PostImagesRepositoryImpl implements PostImagesRepository {
   @Autowired
   public PostImagesRepositoryImpl(DataSource dataSource) {
     this.dataSource = dataSource;
+  }
+
+  @Override
+  public boolean deleteById(int imageId) throws SQLException {
+    String deleteQuery = "DELETE FROM " + TableColumnsPostImages.TABLE.getName()
+            + " WHERE " + TableColumnsPostImages.ID.getName() + " = ? ";
+
+    int result = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
+        statement.setInt(1, imageId);
+
+        result = statement.executeUpdate();
+      }
+    }
+
+    return result > 0;
   }
 
   @Override
