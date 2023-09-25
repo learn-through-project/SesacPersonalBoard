@@ -33,6 +33,13 @@ public class PostControllerImpl implements PostController {
   }
 
   @Override
+  @DeleteMapping(EndPoint.POST)
+  public ResponseEntity<Boolean> deletePermanentlyPost(@RequestParam("id") @Min(1) int postId) throws SQLException {
+    boolean result = postService.deletePermanently(postId);
+    return new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+  @Override
   @PutMapping(EndPoint.POST)
   public ResponseEntity<Boolean> editPost(@RequestBody @Valid PostUpdateDto dto) throws SQLException {
     boolean result = postService.editPost(dto);

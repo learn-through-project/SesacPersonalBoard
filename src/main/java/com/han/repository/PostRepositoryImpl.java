@@ -26,7 +26,7 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public boolean deletePermanently(int postId) throws SQLException {
-    String deleteQuery = "DELETE FROM "+ TableColumnsPost.TABLE +" WHERE "
+    String deleteQuery = "DELETE FROM "+ TableColumnsPost.TABLE.getName() +" WHERE "
             + TableColumnsPost.ID + " = ?";
 
     int result = 0;

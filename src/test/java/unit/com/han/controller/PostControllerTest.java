@@ -36,6 +36,39 @@ public class PostControllerTest {
   @InjectMocks
   private PostControllerImpl postController;
 
+  @Nested
+  class DeletePermanently_Test {
+
+    boolean success = true;
+    boolean fail = false;
+    int postId = 1;
+
+    @Test
+    public void deletePermanently_Throw_Exception() throws SQLException {
+      when(postService.deletePermanently(postId)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postController.deletePermanentlyPost(postId));
+
+      verify(postService).deletePermanently(postId);
+    }
+    @Test
+    public void deletePermanently_Return_False() throws SQLException {
+      when(postService.deletePermanently(postId)).thenReturn(fail);
+      ResponseEntity<Boolean> result = postController.deletePermanentlyPost(postId);
+
+      verify(postService).deletePermanently(postId);
+      assertThat(result.getBody()).isEqualTo(fail);
+      assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+    @Test
+    public void deletePermanently_Return_True() throws SQLException {
+      when(postService.deletePermanently(postId)).thenReturn(success);
+      ResponseEntity<Boolean> result = postController.deletePermanentlyPost(postId);
+
+      verify(postService).deletePermanently(postId);
+      assertThat(result.getBody()).isEqualTo(success);
+      assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+  }
 
   @Nested
   class EditPost_Test {
@@ -43,6 +76,23 @@ public class PostControllerTest {
 
     boolean fail = false;
     private PostUpdateDto dummyDto = new PostUpdateDto(1, 1, "sample");
+
+    @Test
+    public void editPost_Throw_Exception() throws SQLException {
+      when(postService.editPost(dummyDto)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postController.editPost(dummyDto));
+
+      verify(postService).editPost(dummyDto);
+    }
+    @Test
+    public void editPost_Return_False() throws SQLException {
+      when(postService.editPost(dummyDto)).thenReturn(fail);
+
+      ResponseEntity<Boolean> result = postController.editPost(dummyDto);
+
+      assertThat(result.getBody()).isEqualTo(fail);
+      assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
     @Test
     public void editPost_Return_True() throws SQLException {
@@ -60,11 +110,10 @@ public class PostControllerTest {
     private int validPostId = 1;
     private int invalidPostId = 0;
     private Post dummyPost = new Post(1);
-
     @Test
     public void getPostDetail_Throw_Exception() throws SQLException {
       when(postService.getPostDetail(invalidPostId)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postService.getPostDetail(invalidPostId));
+      assertThrows(SQLException.class, () -> postController.getPostDetail(invalidPostId));
 
       verify(postService).getPostDetail(invalidPostId);
     }
@@ -74,22 +123,23 @@ public class PostControllerTest {
       int nonExistingId = 0;
       when(postService.getPostDetail(nonExistingId)).thenReturn(Optional.empty());
 
-      Optional<Post> detail = postService.getPostDetail(nonExistingId);
+      ResponseEntity<Post> detail = postController.getPostDetail(nonExistingId);
 
       verify(postService).getPostDetail(nonExistingId);
-      assertThat(detail).isNotNull();
-      assertThat(detail.isPresent()).isFalse();
+      assertThat(detail.getBody()).isNull();
+      assertThat(detail.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void getPostDetail_Return_Post() throws SQLException {
       when(postService.getPostDetail(validPostId)).thenReturn(Optional.of(dummyPost));
 
-      Optional<Post> detail = postService.getPostDetail(validPostId);
+      ResponseEntity<Post> detail = postController.getPostDetail(validPostId);
 
-      assertThat(detail).isNotNull();
-      assertThat(detail.isPresent()).isTrue();
-      assertThat(detail.get().getId()).isEqualTo(validPostId);
+      verify(postService).getPostDetail(validPostId);
+
+      assertThat(detail.getBody()).isEqualTo(dummyPost);
+      assertThat(detail.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
   }
 
@@ -113,7 +163,7 @@ public class PostControllerTest {
     public void createPost_Return_False() throws SQLException {
       when(postService.createPost(dto)).thenReturn(fail);
 
-      ResponseEntity result = postController.createPost(dto);
+      ResponseEntity<Boolean> result = postController.createPost(dto);
 
       verify(postService).createPost(dto);
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -125,7 +175,7 @@ public class PostControllerTest {
 
       when(postService.createPost(dto)).thenReturn(success);
 
-      ResponseEntity result = postController.createPost(dto);
+      ResponseEntity<Boolean> result = postController.createPost(dto);
 
       verify(postService).createPost(dto);
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
