@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface PostImagesRepository {
+public interface PostImageRepository {
   public Optional<PostImage> findById(int imageId) throws SQLException;
   public List<PostImage> findByPostId(int postId) throws SQLException;
   public boolean insert(PostImage image) throws SQLException;
