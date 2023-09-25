@@ -1,7 +1,7 @@
 package unit.com.han.repository;
 
 import com.han.constants.OrderType;
-import com.han.constants.TableColumnsPost;
+import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.model.Post;
 import com.han.repository.PostRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;

@@ -3,11 +3,11 @@ use hanpost;
 insert into Posts (user_id, text_content) values(1, 'this is smaple');
 
 DELIMITER //
-CREATE PROCEDURE InsertMultipleComments()
+CREATE PROCEDURE InsertMultiplePost()
 BEGIN
-    DECLARE i INT DEFAULT 0;
+    DECLARE i INT DEFAULT 1;
 
-    WHILE i < 100 DO
+    WHILE i < 50 DO
         insert into Posts (user_id, text_content)
         values(1, CONCAT('this is smaple', i));
 
@@ -18,7 +18,7 @@ END //
 
 DELIMITER ;
 
-CALL InsertMultipleComments();
+CALL InsertMultiplePost();
 
 
-DROP PROCEDURE InsertMultipleComments;
+DROP PROCEDURE InsertMultiplePost;

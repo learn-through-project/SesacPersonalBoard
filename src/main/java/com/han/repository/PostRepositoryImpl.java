@@ -1,7 +1,7 @@
 package com.han.repository;
 
 import com.han.constants.OrderType;
-import com.han.constants.TableColumnsPost;
+import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.model.Post;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class PostRepositoryImpl implements PostRepository {
   @Override
   public boolean update(Post post) throws SQLException {
     String updateQuery = "UPDATE posts SET "
-            + TableColumnsPost.AUTHOR + " = ? , "
+            + TableColumnsPost.USER_ID + " = ? , "
             + TableColumnsPost.TEXT_CONTENT + " = ? "
             + " WHERE "+ TableColumnsPost.ID + " = ?";
 
@@ -143,7 +143,7 @@ public class PostRepositoryImpl implements PostRepository {
 
   private Post resultSetToPost(ResultSet rs) throws SQLException {
     Integer id = rs.getInt(TableColumnsPost.ID.getName());
-    Integer authorId = rs.getInt(TableColumnsPost.AUTHOR.getName());
+    Integer authorId = rs.getInt(TableColumnsPost.USER_ID.getName());
     String textContent = rs.getString(TableColumnsPost.TEXT_CONTENT.getName());
     Timestamp createdAt = rs.getTimestamp(TableColumnsPost.CREATED_AT.getName());
     Timestamp updatedAt = rs.getTimestamp(TableColumnsPost.UPDATED_AT.getName());
