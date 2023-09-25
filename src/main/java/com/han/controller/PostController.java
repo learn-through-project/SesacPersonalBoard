@@ -19,5 +19,5 @@ public interface PostController {
   public ResponseEntity<Post> getPostDetail(@PathVariable @Min(1)int postId) throws SQLException;
   public ResponseEntity<Boolean> createPost(@RequestBody @Valid PostCreateDto dto) throws SQLException;
   public ResponseEntity<Boolean> editPost(@RequestBody @Valid PostUpdateDto dto) throws SQLException;
-  public ResponseEntity<Boolean> deletePermanentlyPost(@RequestParam int postId) throws SQLException;
+  public ResponseEntity<Boolean> deletePermanentlyPost(@RequestParam("id") @Min(1) int postId) throws SQLException;
 }

@@ -1,5 +1,6 @@
 package com.han.service;
 
+import com.han.constants.OrderType;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
 import com.han.dto.PostUpdateDto;
@@ -48,9 +49,10 @@ public class PostServiceImpl implements PostService {
     String sort = dto.getSort();
     int page = dto.getPage();
     int limit = dto.getLimit();
+    OrderType order = dto.getOrder();
 
     int offset = (page - 1) * limit;
-    List<Post> list = postRepository.findAll(sort, limit, offset);
+    List<Post> list = postRepository.findAll(order, sort, limit, offset);
 
     return list;
   }

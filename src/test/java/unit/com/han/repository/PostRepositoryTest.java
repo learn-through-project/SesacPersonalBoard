@@ -1,5 +1,6 @@
 package unit.com.han.repository;
 
+import com.han.constants.OrderType;
 import com.han.constants.TableColumnsPost;
 import com.han.model.Post;
 import com.han.repository.PostRepositoryImpl;
@@ -185,13 +186,19 @@ public class PostRepositoryTest {
     private int offset = 20;
     private String orderBy = TableColumnsPost.ID.getName();
 
+    private OrderType orderAsc = OrderType.ASC;
+    private OrderType orderDesc = OrderType.DESC;
+
+
     @Test
     public void findAll_Throw_IllegalArgumentException() throws IllegalArgumentException {
       String invalidColumnName = "hi";
       Integer invalidLimit = limit;
       Integer invalidOffset = offset;
 
-      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> postRepository.findAll(invalidColumnName, invalidLimit, invalidOffset));
+      IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        postRepository.findAll(orderAsc, invalidColumnName, invalidLimit, invalidOffset);
+      });
       assertEquals("Invalid parameters: Please check parameter", exception.getMessage());
 
     }
@@ -199,7 +206,7 @@ public class PostRepositoryTest {
     @Test
     public void findAll_Throw_SQLException_With_Invalid_Query() throws SQLException {
       when(statement.executeQuery()).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postRepository.findAll(orderBy, limit, offset));
+      assertThrows(SQLException.class, () -> postRepository.findAll(orderAsc, orderBy, limit, offset));
     }
 
     @Test
@@ -207,7 +214,7 @@ public class PostRepositoryTest {
       when(statement.executeQuery()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(false);
 
-      List<Post> post = postRepository.findAll(orderBy, limit, offset);
+      List<Post> post = postRepository.findAll(orderAsc, orderBy, limit, offset);
 
       verify(statement).setInt(1, limit);
       verify(statement).setInt(2, offset);
@@ -216,18 +223,33 @@ public class PostRepositoryTest {
     }
 
     @Test
-    public void findAll_Return_Post_List() throws SQLException {
+    public void findAll_Return_Post_List_With_Desc_Order() throws SQLException {
       when(statement.executeQuery()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
       when(resultSet.getInt(TableColumnsPost.ID.getName())).thenReturn(2).thenReturn(1);
 
-      List<Post> post = postRepository.findAll(orderBy, limit, offset);
+      List<Post> post = postRepository.findAll(orderDesc, orderBy, limit, offset);
 
       verify(statement).setInt(1, limit);
       verify(statement).setInt(2, offset);
 
       assertThat(post.size()).isEqualTo(2);
       assertThat(post.get(0).getId()).isGreaterThan(post.get(1).getId());
+    }
+
+    @Test
+    public void findAll_Return_Post_List_With_Asc_Order() throws SQLException {
+      when(statement.executeQuery()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+      when(resultSet.getInt(TableColumnsPost.ID.getName())).thenReturn(1).thenReturn(2);
+
+      List<Post> post = postRepository.findAll(orderAsc, orderBy, limit, offset);
+
+      verify(statement).setInt(1, limit);
+      verify(statement).setInt(2, offset);
+
+      assertThat(post.size()).isEqualTo(2);
+      assertThat(post.get(1).getId()).isGreaterThan(post.get(0).getId());
     }
   }
 
