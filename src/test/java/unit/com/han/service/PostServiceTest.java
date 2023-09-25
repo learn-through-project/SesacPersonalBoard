@@ -1,5 +1,6 @@
 package unit.com.han.service;
 
+import com.han.constants.OrderType;
 import com.han.constants.TableColumnsPost;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
@@ -7,7 +8,6 @@ import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
 import com.han.service.PostServiceImpl;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -179,45 +179,60 @@ public class PostServiceTest {
 
   @Nested
   class GetPostList_Test {
-
-    private Post validPost = new Post(1);
-
     private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID.getName(), 10, 1);
-
-    private int page;
     private int limit;
     private int offset;
     private String sort;
 
+    private OrderType orderAsc = OrderType.ASC;
+    private OrderType orderDesc = OrderType.DESC;
 
     @BeforeEach
     public void setUp() {
       offset = (dto.getPage() - 1) * dto.getLimit();
-      page = dto.getPage();
       limit = dto.getLimit();
       sort = dto.getSort();
     }
 
     @Test
     public void getPostList_Throw_Exception() throws SQLException {
-      when(postRepository.findAll(sort, limit, offset)).thenThrow(SQLException.class);
+      when(postRepository.findAll(orderAsc, sort, limit, offset)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postService.getPostList(dto));
     }
 
     @Test
-    public void getPostList_Return_Post_List() throws SQLException {
+    public void getPostList_Return_Post_List_With_Desc_Order() throws SQLException {
 
       List<Post> mockList = IntStream
               .range(0, limit)
-              .mapToObj((i) -> validPost)
+              .mapToObj((i) -> new Post(i))
+              .sorted((p1, p2) -> p2.getId().compareTo(p1.getId()))
               .collect(Collectors.toList());
 
-      when(postRepository.findAll(sort, limit, offset)).thenReturn(mockList);
+      when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
+
+      dto.setOrder(orderDesc);
+      List<Post> list = postService.getPostList(dto);
+
+      verify(postRepository).findAll(orderDesc, sort, limit, offset);
+      assertThat(list.size()).isEqualTo(mockList.size());
+      assertThat(list.get(0).getId()).isGreaterThan(list.get(1).getId());
+    }
+    @Test
+    public void getPostList_Return_Post_List_With_Asc_Order() throws SQLException {
+
+      List<Post> mockList = IntStream
+              .range(0, limit)
+              .mapToObj((i) -> new Post(i))
+              .collect(Collectors.toList());
+
+      when(postRepository.findAll(orderAsc, sort, limit, offset)).thenReturn(mockList);
 
       List<Post> list = postService.getPostList(dto);
 
-      verify(postRepository).findAll(sort, limit, offset);
+      verify(postRepository).findAll(orderAsc, sort, limit, offset);
       assertThat(list.size()).isEqualTo(mockList.size());
+      assertThat(list.get(1).getId()).isGreaterThan(list.get(0).getId());
     }
   }
 
