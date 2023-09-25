@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostUpdateDto {
   @NotNull
-  private final int id;
+  private final Integer id;
 
   @NotNull
-  private final int author;
+  private final Integer author;
 
   @NotEmpty
   private final String textContent;
