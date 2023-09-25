@@ -56,6 +56,40 @@ public class PostRepositoryTest {
   }
 
   @Nested
+  class DeletePermanently_Test {
+    int success = 1;
+    int fail = 0;
+    int postId = 1;
+
+    @Test
+    public void deletePermanently_Throw_Exception() throws SQLException {
+      when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+      assertThrows(SQLException.class, ()-> postRepository.deletePermanently(postId));
+      verify(statement).setInt(1, postId);
+    }
+    @Test
+    public void deletePermanently_Return_False() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(fail);
+
+      boolean isSuccess = postRepository.deletePermanently(postId);
+
+      verify(statement).setInt(1, postId);
+      assertThat(isSuccess).isFalse();
+    }
+
+    @Test
+    public void deletePermanently_Return_True() throws SQLException {
+      when(statement.executeUpdate()).thenReturn(success);
+
+      boolean isSuccess = postRepository.deletePermanently(postId);
+
+      verify(statement).setInt(1, postId);
+      assertThat(isSuccess).isTrue();
+    }
+  }
+
+  @Nested
   class Update_Test {
     int success = 1;
     int fail = 0;

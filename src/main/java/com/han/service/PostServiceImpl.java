@@ -24,6 +24,12 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
+  public boolean deletePermanently(int postId) throws SQLException {
+    boolean result = postRepository.deletePermanently(postId);
+    return result;
+  }
+
+  @Override
   public boolean editPost(PostUpdateDto dto) throws SQLException {
     Post post = fromUpdateDtoToPost(dto);
     boolean result = postRepository.update(post);
