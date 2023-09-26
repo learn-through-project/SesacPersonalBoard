@@ -1,5 +1,6 @@
 package unit.com.han.controller;
 
+import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.controller.PostControllerImpl;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostListReqDto;
@@ -195,7 +196,7 @@ public class PostControllerTest {
 
   @Nested
   class GetPostList_Test {
-    private PostListReqDto reqDto = new PostListReqDto("id", 10, 1);
+    private PostListReqDto reqDto = new PostListReqDto(TableColumnsPost.ID, 10, 1);
 
     private List<Post> dummyList;
 
