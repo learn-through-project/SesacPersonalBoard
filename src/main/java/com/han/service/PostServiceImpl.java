@@ -8,6 +8,7 @@ import com.han.model.Post;
 import com.han.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -38,7 +39,7 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public boolean createPost(PostCreateDto dto) throws SQLException {
+  public boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException {
     Post post = fromCreateDtoToPost(dto);
     boolean result = postRepository.insert(post);
     return result;

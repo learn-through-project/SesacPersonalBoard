@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -48,8 +49,11 @@ public class PostControllerImpl implements PostController {
 
   @Override
   @PostMapping(EndPoint.POST)
-  public ResponseEntity<Boolean> createPost(@RequestBody @Valid PostCreateDto dto) throws SQLException {
-    boolean result = postService.createPost(dto);
+  public ResponseEntity<Boolean> createPost(
+          @RequestParam("post") PostCreateDto dto,
+          @RequestParam("images") List<MultipartFile> images) throws SQLException {
+
+    boolean result = postService.createPost(dto, images);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

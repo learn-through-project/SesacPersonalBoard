@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Nested;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -109,21 +110,26 @@ public class PostServiceTest {
   }
   @Nested
   class CreatePost_Test {
-
+    @Mock
+    private MultipartFile dummyFile;
     private PostCreateDto dummyDto = new PostCreateDto(1, "this is sample");
     private Post dummyPost = new Post(1, "this is sample");
-
+    private List<MultipartFile> dummyFiles;
+    @BeforeEach
+    public void setUp() {
+      this.dummyFiles = List.of(dummyFile, dummyFile);
+    }
     @Test
     public void createPost_Throw_Exception() throws SQLException {
       when(postRepository.insert(dummyPost)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postService.createPost(dummyDto));
+      assertThrows(SQLException.class, () -> postService.createPost(dummyDto, dummyFiles));
 
       verify(postRepository).insert(dummyPost);
     }
     @Test
     public void createPost_Return_False() throws SQLException {
       when(postRepository.insert(dummyPost)).thenReturn(false);
-      boolean isSuccess = postService.createPost(dummyDto);
+      boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 
       verify(postRepository).insert(dummyPost);
       assertThat(isSuccess).isFalse();
@@ -131,7 +137,7 @@ public class PostServiceTest {
     @Test
     public void createPost_Return_True() throws SQLException {
       when(postRepository.insert(dummyPost)).thenReturn(true);
-      boolean isSuccess = postService.createPost(dummyDto);
+      boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 
       verify(postRepository).insert(dummyPost);
       assertThat(isSuccess).isTrue();
