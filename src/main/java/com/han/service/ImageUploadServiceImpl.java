@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Log4j2
 @Service
@@ -41,7 +42,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
   @Override
   public String uploadImage(MultipartFile file) throws IOException {
-    String fileName = file.getName() + "_" + LocalDateTime.now();
+    String fileName = file.getName();
     Blob blob = storage.create(fileName, file.getBytes(), file.getContentType());
     String url = getUrl(blob.getName());
     return url;
