@@ -156,25 +156,25 @@ public class PostRepositoryTest {
     public void insert_Return_False() throws SQLException {
       when(statement.executeUpdate()).thenReturn(fail);
 
-      boolean result = postRepository.insert(dummyPost);
+      Integer result = postRepository.insert(dummyPost);
 
       verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
-      assertThat(result).isFalse();
+      assertThat(result).isNull();
     }
     @Test
-    public void insert_Return_True() throws SQLException {
+    public void insert_Return_PostId() throws SQLException {
       when(statement.executeUpdate()).thenReturn(success);
 
-      boolean result = postRepository.insert(dummyPost);
+      Integer result = postRepository.insert(dummyPost);
 
       verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
-      assertThat(result).isTrue();
+      assertThat(result).isNotNull();
     }
 
   }

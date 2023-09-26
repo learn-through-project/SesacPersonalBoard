@@ -135,7 +135,7 @@ public class PostServiceTest {
     }
     @Test
     public void createPost_Return_False() throws SQLException, IOException {
-      when(postRepository.insert(dummyPost)).thenReturn(false);
+      when(postRepository.insert(dummyPost)).thenReturn(null);
       boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 
       verify(postRepository).insert(dummyPost);
@@ -144,7 +144,7 @@ public class PostServiceTest {
     @Test
     public void createPost_Return_True() throws SQLException, IOException {
       when(imageUploadService.uploadImages(dummyFiles)).thenReturn(List.of(testUrl));
-      when(postRepository.insert(dummyPost)).thenReturn(true);
+      when(postRepository.insert(dummyPost)).thenReturn(1);
 
       boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 

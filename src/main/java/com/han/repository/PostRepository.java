@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface PostRepository {
   public Optional<Post> findById(int postId) throws SQLException;
   public List<Post> findAll(OrderType order, String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException;
-  public boolean insert(Post post) throws SQLException;
+  public Integer insert(Post post) throws SQLException;
   public boolean update(Post post) throws SQLException;
   public boolean deletePermanently(int postId) throws SQLException;
 }

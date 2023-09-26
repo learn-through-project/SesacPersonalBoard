@@ -68,20 +68,30 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public boolean insert(Post post) throws SQLException {
-    String insertQuery = "INSERT INTO posts (author, text_content) VALUES (?, ?)";
-    int result = 0;
+  public Integer insert(Post post) throws SQLException {
+    String insertQuery = "INSERT INTO " + TableColumnsPost.TABLE.getName() + "("
+            + TableColumnsPost.USER_ID + ","
+            + TableColumnsPost.TEXT_CONTENT + ")"
+            + " VALUES (?, ?)";
+
+    Integer createdPostId = null;
 
     try (Connection conn = dataSource.getConnection()) {
-      try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
+      try (PreparedStatement statement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
           statement.setInt(1, post.getUserId());
           statement.setString(2, post.getTextContent());
 
-          result = statement.executeUpdate();
+          statement.executeUpdate();
+
+        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+          if (generatedKeys.next()) {
+            createdPostId = generatedKeys.getInt(1);
+          }
+        }
       }
     }
 
-    return result > 0;
+    return createdPostId;
   }
 
   @Override
