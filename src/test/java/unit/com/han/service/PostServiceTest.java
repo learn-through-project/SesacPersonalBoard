@@ -7,6 +7,8 @@ import com.han.dto.PostListReqDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
+import com.han.service.ImageUploadService;
+import com.han.service.ImageUploadServiceImpl;
 import com.han.service.PostServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +34,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PostServiceTest {
 
+  @Mock
+  private ImageUploadService imageUploadService;
   @Mock
   private PostRepository postRepository;
 
@@ -115,6 +120,8 @@ public class PostServiceTest {
     private PostCreateDto dummyDto = new PostCreateDto(1, "this is sample");
     private Post dummyPost = new Post(1, "this is sample");
     private List<MultipartFile> dummyFiles;
+
+    private String testUrl = "url";
     @BeforeEach
     public void setUp() {
       this.dummyFiles = List.of(dummyFile, dummyFile);
@@ -127,7 +134,7 @@ public class PostServiceTest {
       verify(postRepository).insert(dummyPost);
     }
     @Test
-    public void createPost_Return_False() throws SQLException {
+    public void createPost_Return_False() throws SQLException, IOException {
       when(postRepository.insert(dummyPost)).thenReturn(false);
       boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 
@@ -135,11 +142,15 @@ public class PostServiceTest {
       assertThat(isSuccess).isFalse();
     }
     @Test
-    public void createPost_Return_True() throws SQLException {
+    public void createPost_Return_True() throws SQLException, IOException {
+      when(imageUploadService.uploadImages(dummyFiles)).thenReturn(List.of(testUrl));
       when(postRepository.insert(dummyPost)).thenReturn(true);
+
       boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 
+      verify(imageUploadService).uploadImages(dummyFiles);
       verify(postRepository).insert(dummyPost);
+
       assertThat(isSuccess).isTrue();
     }
   }
