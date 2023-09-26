@@ -15,7 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -145,39 +147,47 @@ public class PostControllerTest {
 
   @Nested
   class createPost_Test {
+    @Mock
+    private MultipartFile dummyFile;
 
     boolean success = true;
-
     boolean fail = false;
     private PostCreateDto dto = new PostCreateDto(1, "this is sample");
 
-    @Test
-    public void createPost_Throws_SQLException() throws SQLException {
-      when(postService.createPost(dto)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postController.createPost(dto));
+    private List<MultipartFile> dummyFiles;
 
-      verify(postService).createPost(dto);
+    @BeforeEach
+    public void setUp() {
+      this.dummyFiles = List.of(dummyFile, dummyFile);
+    }
+
+
+    @Test
+    public void createPost_Throws_SQLException() throws SQLException, IOException {
+      when(postService.createPost(dto, dummyFiles)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postController.createPost(dto, dummyFiles));
+
+      verify(postService).createPost(dto, dummyFiles);
     }
 
     @Test
-    public void createPost_Return_False() throws SQLException {
-      when(postService.createPost(dto)).thenReturn(fail);
+    public void createPost_Return_False() throws SQLException, IOException {
+      when(postService.createPost(dto, dummyFiles)).thenReturn(fail);
 
-      ResponseEntity<Boolean> result = postController.createPost(dto);
+      ResponseEntity<Boolean> result = postController.createPost(dto, dummyFiles);
 
-      verify(postService).createPost(dto);
+      verify(postService).createPost(dto, dummyFiles);
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
       assertThat(result.getBody()).isEqualTo(fail);
     }
 
     @Test
-    public void createPost_Return_True() throws SQLException {
+    public void createPost_Return_True() throws SQLException, IOException {
+      when(postService.createPost(dto, dummyFiles)).thenReturn(success);
 
-      when(postService.createPost(dto)).thenReturn(success);
+      ResponseEntity<Boolean> result = postController.createPost(dto, dummyFiles);
 
-      ResponseEntity<Boolean> result = postController.createPost(dto);
-
-      verify(postService).createPost(dto);
+      verify(postService).createPost(dto, dummyFiles);
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
       assertThat(result.getBody()).isEqualTo(success);
     }

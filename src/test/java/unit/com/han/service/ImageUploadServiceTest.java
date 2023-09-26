@@ -40,6 +40,13 @@ public class ImageUploadServiceTest {
   @Nested
   class UploadImages_Test {
 
+    private List<MultipartFile> dummyFiles;
+
+    @BeforeEach
+    public void setUp() {
+      this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
+    }
+
     @Test
     public void uploadImage_Return_Empty_List_When_All_File_Fail() throws IOException {
       int fileCount = 3;
@@ -48,8 +55,7 @@ public class ImageUploadServiceTest {
       when(storage.create(dummyFile.getName(), dummyFile.getBytes(), dummyFile.getContentType()))
               .thenThrow(StorageException.class).thenThrow(StorageException.class).thenThrow(StorageException.class);
 
-      MultipartFile[] files = { dummyFile, dummyFile, dummyFile };
-      List<String> urls = imageUploadService.uploadImages(files);
+      List<String> urls = imageUploadService.uploadImages(dummyFiles);
 
       verify(storage, times(fileCount)).create(dummyFile.getName(), dummyFile.getBytes(), dummyFile.getContentType());
       assertThat(urls.size()).isEqualTo(fileCount - failFileCount);
@@ -65,8 +71,8 @@ public class ImageUploadServiceTest {
               .thenReturn(blob).thenThrow(StorageException.class).thenReturn(blob);
       when(blob.getName()).thenReturn("mockedBlobName1").thenReturn("mockedBlobName2");
 
-      MultipartFile[] files = { dummyFile, dummyFile, dummyFile };
-      List<String> urls = imageUploadService.uploadImages(files);
+
+      List<String> urls = imageUploadService.uploadImages(dummyFiles);
 
       verify(storage, times(fileCount)).create(dummyFile.getName(), dummyFile.getBytes(), dummyFile.getContentType());
       assertThat(urls.size()).isEqualTo(fileCount - failFileCount);
@@ -78,11 +84,10 @@ public class ImageUploadServiceTest {
               .thenReturn(blob).thenReturn(blob);
       when(blob.getName()).thenReturn("mockedBlobName1").thenReturn("mockedBlobName2");
 
-      MultipartFile[] files = { dummyFile, dummyFile };
-      List<String> urls = imageUploadService.uploadImages(files);
+      List<String> urls = imageUploadService.uploadImages(dummyFiles);
 
-      verify(storage, times(files.length)).create(dummyFile.getName(), dummyFile.getBytes(), dummyFile.getContentType());
-      assertThat(urls.size()).isEqualTo(files.length);
+      verify(storage, times(dummyFiles.size())).create(dummyFile.getName(), dummyFile.getBytes(), dummyFile.getContentType());
+      assertThat(urls.size()).isEqualTo(dummyFiles.size());
     }
   }
 

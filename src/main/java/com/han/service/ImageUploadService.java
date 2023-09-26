@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ImageUploadService {
   public String uploadImage(MultipartFile file) throws IOException;
-  public List<String> uploadImages(MultipartFile[] files) throws IOException;
+  public List<String> uploadImages(List<MultipartFile> files) throws IOException;
 }

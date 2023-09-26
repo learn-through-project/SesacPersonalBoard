@@ -3,15 +3,22 @@ package com.han.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class PostCreateDto {
 
   @NotNull
-  private final int author;
+  private int userId;
 
   @NotEmpty
-  private final String textContent;
+  private String textContent;
+
+  public PostCreateDto(int userId, String textContent) {
+    this.userId = userId;
+    this.textContent = textContent;
+  }
 }

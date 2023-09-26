@@ -97,7 +97,7 @@ public class PostImageRepositoryTest {
   class Update_Test {
     private int  success = 1;
     private int  fail = 0;
-    private PostImage dummyImage = new PostImage(1, 1, "http://");
+    private PostImage dummyImage = new PostImage(1, 1, "http://", 1);
 
     @Test
     public void update_Throws_Exception() throws SQLException {
@@ -128,7 +128,7 @@ public class PostImageRepositoryTest {
 
     private int  success = 1;
     private int  fail = 0;
-    private PostImage dummyImage = new PostImage(1, 1, "http://");
+    private PostImage dummyImage = new PostImage(1, 1, "http://", 1);
 
 
     @Test
@@ -140,6 +140,7 @@ public class PostImageRepositoryTest {
       verify(statement).executeUpdate();
       verify(statement).setInt(1, dummyImage.getPostId());
       verify(statement).setString(2, dummyImage.getUrl());
+      verify(statement).setInt(3, dummyImage.getImageOrder());
     }
     @Test
     public void insert_Return_Fail() throws SQLException {
@@ -150,6 +151,7 @@ public class PostImageRepositoryTest {
       verify(statement).executeUpdate();
       verify(statement).setInt(1, dummyImage.getPostId());
       verify(statement).setString(2, dummyImage.getUrl());
+      verify(statement).setInt(3, dummyImage.getImageOrder());
       assertThat(result).isFalse();
     }
     @Test
@@ -161,6 +163,7 @@ public class PostImageRepositoryTest {
       verify(statement).executeUpdate();
       verify(statement).setInt(1, dummyImage.getPostId());
       verify(statement).setString(2, dummyImage.getUrl());
+      verify(statement).setInt(3, dummyImage.getImageOrder());
       assertThat(result).isTrue();
     }
   }

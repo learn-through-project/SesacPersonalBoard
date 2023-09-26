@@ -4,7 +4,6 @@ package com.han.service;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.StorageException;
-import com.han.repository.PostImageRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,18 +41,19 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
   @Override
   public String uploadImage(MultipartFile file) throws IOException {
-    Blob blob = storage.create(file.getName(), file.getBytes(), file.getContentType());
+    String fileName = file.getName() + "_" + LocalDateTime.now();
+    Blob blob = storage.create(fileName, file.getBytes(), file.getContentType());
     String url = getUrl(blob.getName());
     return url;
   }
 
   @Override
-  public List<String> uploadImages(MultipartFile[] files) throws IOException {
+  public List<String> uploadImages(List<MultipartFile> files) throws IOException {
     List<String> urls = new LinkedList<>();
 
-    for (int i = 0; i < files.length; i++) {
+    for (int i = 0; i < files.size(); i++) {
       try {
-        urls.add(uploadImage(files[i]));
+        urls.add(uploadImage(files.get(i)));
       } catch (StorageException ex) {
         log.error("Error in " + i + "th file upload: >> " + ex.getMessage());
       }

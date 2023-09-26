@@ -6,22 +6,31 @@ import com.han.dto.PostListReqDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Service
 public class PostServiceImpl implements PostService {
 
 
+  private final PostImageService postImageService;
   private final PostRepository postRepository;
 
+
   @Autowired
-  public PostServiceImpl(PostRepository postRepository) {
+  public PostServiceImpl(PostRepository postRepository, PostImageService postImageService) {
     this.postRepository = postRepository;
+    this.postImageService = postImageService;
+
   }
 
   @Override
@@ -37,11 +46,16 @@ public class PostServiceImpl implements PostService {
     return result;
   }
 
+
+  @Transactional(rollbackFor = {SQLException.class, IOException.class})
   @Override
-  public boolean createPost(PostCreateDto dto) throws SQLException {
+  public boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException, IOException {
     Post post = fromCreateDtoToPost(dto);
-    boolean result = postRepository.insert(post);
-    return result;
+
+    Integer postId = postRepository.insert(post);
+    boolean isSuccess = postImageService.createPostImage(postId, files);
+
+    return isSuccess;
   }
 
   @Override
@@ -66,7 +80,7 @@ public class PostServiceImpl implements PostService {
   }
 
   private Post fromCreateDtoToPost(PostCreateDto dto) {
-    Post post = new Post(dto.getAuthor(), dto.getTextContent());
+    Post post = new Post(dto.getUserId(), dto.getTextContent());
 
     return post;
   }
