@@ -3,6 +3,7 @@ package com.han.repository;
 import com.han.constants.tablesColumns.TableColumnsPostImages;
 import com.han.model.PostImage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public class PostImageRepositoryImpl implements PostImageRepository {
 
   private DataSource dataSource;
@@ -65,7 +67,7 @@ public class PostImageRepositoryImpl implements PostImageRepository {
   public boolean insert(PostImage image) throws SQLException {
     String insertQuery = "INSERT INTO "
             + TableColumnsPostImages.TABLE.getName()
-            + " VALUES (?, ?)";
+            + " VALUES (?, ?, ?)";
 
     int result = 0;
 
@@ -73,6 +75,7 @@ public class PostImageRepositoryImpl implements PostImageRepository {
       try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
         statement.setInt(1, image.getPostId());
         statement.setString(2, image.getUrl());
+        statement.setInt(3, image.getImageOrder());
         result = statement.executeUpdate();
       }
     }
@@ -133,8 +136,9 @@ public class PostImageRepositoryImpl implements PostImageRepository {
     int id = rs.getInt(TableColumnsPostImages.ID.getName());
     int postId = rs.getInt(TableColumnsPostImages.POST_ID.getName());
     String url = rs.getString(TableColumnsPostImages.URL.getName());
+    int imageOrder = rs.getInt(TableColumnsPostImages.IMAGE_ORDER.getName());
 
-    PostImage image = new PostImage(id, postId, url);
+    PostImage image = new PostImage(id, postId, url, imageOrder);
     return image;
   }
 }

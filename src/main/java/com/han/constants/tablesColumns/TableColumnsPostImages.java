@@ -6,7 +6,8 @@ public enum TableColumnsPostImages {
   TABLE("post_images", String.class),
   ID("id", Integer.class),
   POST_ID("post_id", Integer.class),
-  URL("url", String.class);
+  URL("url", String.class),
+  IMAGE_ORDER("image_order", Integer.class);
 
   private final String columnName;
 
