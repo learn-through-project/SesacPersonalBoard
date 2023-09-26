@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Log4j2
-@RestController
+//@RestController
 @Validated
 public class PostControllerImpl implements PostController {
 
