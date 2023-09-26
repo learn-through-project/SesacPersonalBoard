@@ -22,13 +22,15 @@ import java.util.Optional;
 public class PostServiceImpl implements PostService {
 
 
+  private final PostImageService postImageService;
   private final PostRepository postRepository;
-  private final ImageUploadService imageUploadService;
+
 
   @Autowired
-  public PostServiceImpl(PostRepository postRepository, ImageUploadService imageUploadService) {
+  public PostServiceImpl(PostRepository postRepository, PostImageService postImageService) {
     this.postRepository = postRepository;
-    this.imageUploadService = imageUploadService;
+    this.postImageService = postImageService;
+
   }
 
   @Override
@@ -44,20 +46,16 @@ public class PostServiceImpl implements PostService {
     return result;
   }
 
+
+  @Transactional(rollbackFor = {SQLException.class, IOException.class})
   @Override
-  @Transactional
   public boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException, IOException {
     Post post = fromCreateDtoToPost(dto);
-    boolean result = false;
 
-    try {
-      imageUploadService.uploadImages(files);
-      result = postRepository.insert(post);
-    } catch (IOException ex) {
-      log.error("error in createPost: >>" + ex.getMessage());
-    }
+    Integer postId = postRepository.insert(post);
+    boolean isSuccess = postImageService.createPostImage(postId, files);
 
-    return result;
+    return isSuccess;
   }
 
   @Override

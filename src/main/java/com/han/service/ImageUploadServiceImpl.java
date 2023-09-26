@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,7 +41,8 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
   @Override
   public String uploadImage(MultipartFile file) throws IOException {
-    Blob blob = storage.create(file.getName(), file.getBytes(), file.getContentType());
+    String fileName = file.getName() + "_" + LocalDateTime.now();
+    Blob blob = storage.create(fileName, file.getBytes(), file.getContentType());
     String url = getUrl(blob.getName());
     return url;
   }

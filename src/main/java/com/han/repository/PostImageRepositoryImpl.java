@@ -66,7 +66,10 @@ public class PostImageRepositoryImpl implements PostImageRepository {
   @Override
   public boolean insert(PostImage image) throws SQLException {
     String insertQuery = "INSERT INTO "
-            + TableColumnsPostImages.TABLE.getName()
+            + TableColumnsPostImages.TABLE.getName() + " ( "
+            + TableColumnsPostImages.POST_ID + ", "
+            + TableColumnsPostImages.URL + ","
+            + TableColumnsPostImages.IMAGE_ORDER + " ) "
             + " VALUES (?, ?, ?)";
 
     int result = 0;
