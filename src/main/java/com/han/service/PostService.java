@@ -17,4 +17,5 @@ public interface PostService {
   boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException, IOException;
   boolean editPost(PostUpdateDto dto) throws SQLException;
   boolean deletePermanently(int postId) throws SQLException;
+  int getPostListTotalCount() throws SQLException;
 }

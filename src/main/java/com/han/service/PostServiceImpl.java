@@ -36,6 +36,12 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
+  public int getPostListTotalCount() throws SQLException {
+    int count = postRepository.getPostTotalCount();
+    return count;
+  }
+
+  @Override
   public boolean deletePermanently(int postId) throws SQLException {
     boolean result = postRepository.deletePermanently(postId);
     return result;
@@ -71,6 +77,7 @@ public class PostServiceImpl implements PostService {
 
     int offset = (page - 1) * limit;
     List<Post> list = postRepository.findAll(order, sort, limit, offset);
+
 
     return list;
   }
