@@ -2,7 +2,7 @@ package unit.com.han.controller;
 
 import com.han.controller.PostControllerImpl;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListDto;
+import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.service.PostService;

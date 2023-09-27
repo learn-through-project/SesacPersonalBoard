@@ -138,7 +138,7 @@ public class PostRepositoryImpl implements PostRepository {
         }
       }
     }
-    
+
     return postList;
   }
 

@@ -1,7 +1,7 @@
 package com.han.service;
 
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListDto;
+import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import org.springframework.web.multipart.MultipartFile;
