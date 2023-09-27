@@ -1,14 +1,14 @@
 package unit.com.han.service;
 
 import com.han.constants.OrderType;
+import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListReqDto;
+import com.han.dto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
-import com.han.service.ImageUploadService;
-import com.han.service.ImageUploadServiceImpl;
+import com.han.service.PostImageService;
 import com.han.service.PostServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 public class PostServiceTest {
 
   @Mock
-  private ImageUploadService imageUploadService;
+  private PostImageService postImageService;
   @Mock
   private PostRepository postRepository;
 
@@ -57,6 +57,7 @@ public class PostServiceTest {
 
       verify(postRepository).deletePermanently(postId);
     }
+
     @Test
     public void DeletePermanently_Return_False() throws SQLException {
       when(postRepository.deletePermanently(postId)).thenReturn(fail);
@@ -66,6 +67,7 @@ public class PostServiceTest {
       verify(postRepository).deletePermanently(postId);
       assertThat(isSuccess).isFalse();
     }
+
     @Test
     public void DeletePermanently_Return_True() throws SQLException {
       when(postRepository.deletePermanently(postId)).thenReturn(success);
@@ -93,6 +95,7 @@ public class PostServiceTest {
 
       verify(postRepository).update(dummyPost);
     }
+
     @Test
     public void editPost_Return_False() throws SQLException {
       when(postRepository.update(dummyPost)).thenReturn(fail);
@@ -102,6 +105,7 @@ public class PostServiceTest {
       verify(postRepository).update(dummyPost);
       assertThat(result).isFalse();
     }
+
     @Test
     public void editPost_Return_True() throws SQLException {
       when(postRepository.update(dummyPost)).thenReturn(success);
@@ -113,19 +117,24 @@ public class PostServiceTest {
     }
 
   }
+
   @Nested
   class CreatePost_Test {
     @Mock
     private MultipartFile dummyFile;
+
+    private int postId = 1;
     private PostCreateDto dummyDto = new PostCreateDto(1, "this is sample");
     private Post dummyPost = new Post(1, "this is sample");
     private List<MultipartFile> dummyFiles;
 
     private String testUrl = "url";
+
     @BeforeEach
     public void setUp() {
       this.dummyFiles = List.of(dummyFile, dummyFile);
     }
+
     @Test
     public void createPost_Throw_Exception() throws SQLException {
       when(postRepository.insert(dummyPost)).thenThrow(SQLException.class);
@@ -133,23 +142,27 @@ public class PostServiceTest {
 
       verify(postRepository).insert(dummyPost);
     }
+
     @Test
-    public void createPost_Return_False() throws SQLException, IOException {
+    public void createPost_Throws_NullPointException_When_Insert_Fail() throws SQLException, IOException {
+      Integer nullPostId = null;
       when(postRepository.insert(dummyPost)).thenReturn(null);
-      boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
+      assertThrows(NullPointerException.class, () -> postImageService.createPostImage(nullPostId, dummyFiles));
+      assertThrows(NullPointerException.class, () -> postService.createPost(dummyDto, dummyFiles));
 
       verify(postRepository).insert(dummyPost);
-      assertThat(isSuccess).isFalse();
     }
+
     @Test
     public void createPost_Return_True() throws SQLException, IOException {
-      when(imageUploadService.uploadImages(dummyFiles)).thenReturn(List.of(testUrl));
-      when(postRepository.insert(dummyPost)).thenReturn(1);
+      when(postRepository.insert(dummyPost)).thenReturn(postId);
+      when(postImageService.createPostImage(postId, dummyFiles)).thenReturn(true);
 
       boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
 
-      verify(imageUploadService).uploadImages(dummyFiles);
+
       verify(postRepository).insert(dummyPost);
+      verify(postImageService).createPostImage(postId, dummyFiles);
 
       assertThat(isSuccess).isTrue();
     }
@@ -196,10 +209,10 @@ public class PostServiceTest {
 
   @Nested
   class GetPostList_Test {
-    private PostListReqDto dto = new PostListReqDto(TableColumnsPost.ID.getName(), 10, 1);
+    private PostListDto dto = new PostListDto(10, 1);
     private int limit;
     private int offset;
-    private String sort;
+    private TableColumnsPost sort;
 
     private OrderType orderAsc = OrderType.ASC;
     private OrderType orderDesc = OrderType.DESC;
@@ -208,7 +221,9 @@ public class PostServiceTest {
     public void setUp() {
       offset = (dto.getPage() - 1) * dto.getLimit();
       limit = dto.getLimit();
-      sort = dto.getSort();
+      sort = dto.getSort().equals(SortType.NEW)
+              ? TableColumnsPost.CREATED_AT
+              : TableColumnsPost.ID;
     }
 
     @Test
@@ -228,13 +243,14 @@ public class PostServiceTest {
 
       when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
 
-      dto.setOrder(orderDesc);
+      dto.setOrder(OrderType.DESC.name());
       List<Post> list = postService.getPostList(dto);
 
       verify(postRepository).findAll(orderDesc, sort, limit, offset);
       assertThat(list.size()).isEqualTo(mockList.size());
       assertThat(list.get(0).getId()).isGreaterThan(list.get(1).getId());
     }
+
     @Test
     public void getPostList_Return_Post_List_With_Asc_Order() throws SQLException {
 

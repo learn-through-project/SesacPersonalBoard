@@ -2,7 +2,7 @@ package com.han.controller;
 
 import com.han.constants.EndPoint;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListReqDto;
+import com.han.dto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Log4j2
-@RestController
+@RestController()
 @Validated
+@RequestMapping(EndPoint.API)
 public class PostControllerImpl implements PostController {
 
   private final PostService postService;
@@ -60,8 +61,8 @@ public class PostControllerImpl implements PostController {
 
   @Override
   @GetMapping(EndPoint.POST)
-  public ResponseEntity<List<Post>> getPostList(@Valid PostListReqDto reqDto) throws SQLException {
-    List<Post> postList = postService.getPostList(reqDto);
+  public ResponseEntity<List<Post>> getPostList(@Valid PostListDto dto) throws SQLException {
+    List<Post> postList = postService.getPostList(dto);
     return new ResponseEntity<>(postList, HttpStatus.OK);
   }
 

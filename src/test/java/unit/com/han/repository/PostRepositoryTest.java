@@ -45,7 +45,10 @@ public class PostRepositoryTest {
   private PostRepositoryImpl postRepository;
 
   private final List<String> skipSetUpMethods = List.of(
-          "findAll_Throw_IllegalArgumentException"
+          "findAll_Throw_IllegalArgumentException_When_Limit_Invalid",
+          "insert_Return_PostId",
+          "insert_Return_Null",
+          "insert_Throw_SQLException"
   );
 
   @BeforeEach
@@ -144,7 +147,10 @@ public class PostRepositoryTest {
 
     @Test
     public void insert_Throw_SQLException() throws SQLException {
+      when(dataSource.getConnection()).thenReturn(connection);
+      when(connection.prepareStatement(anyString(), anyInt())).thenReturn(statement);
       when(statement.executeUpdate()).thenThrow(SQLException.class);
+
       assertThrows(SQLException.class, () -> postRepository.insert(dummyPost));
 
       verify(statement).setInt(1, dummyPost.getUserId());
@@ -153,8 +159,12 @@ public class PostRepositoryTest {
 
     }
     @Test
-    public void insert_Return_False() throws SQLException {
+    public void insert_Return_Null() throws SQLException {
+      when(dataSource.getConnection()).thenReturn(connection);
+      when(connection.prepareStatement(anyString(), anyInt())).thenReturn(statement);
       when(statement.executeUpdate()).thenReturn(fail);
+      when(statement.getGeneratedKeys()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(false);
 
       Integer result = postRepository.insert(dummyPost);
 
@@ -166,15 +176,24 @@ public class PostRepositoryTest {
     }
     @Test
     public void insert_Return_PostId() throws SQLException {
-      when(statement.executeUpdate()).thenReturn(success);
+      int insertedId = 1;
 
-      Integer result = postRepository.insert(dummyPost);
+      when(dataSource.getConnection()).thenReturn(connection);
+      when(connection.prepareStatement(anyString(), anyInt())).thenReturn(statement);
+      when(statement.executeUpdate()).thenReturn(success);
+      when(statement.getGeneratedKeys()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(true);
+      when(resultSet.getInt(TableColumnsPost.USER_ID.getName())).thenReturn(insertedId);
+
+      Integer postId = postRepository.insert(dummyPost);
 
       verify(statement).setInt(1, dummyPost.getUserId());
       verify(statement).setString(2, dummyPost.getTextContent());
       verify(statement).executeUpdate();
-
-      assertThat(result).isNotNull();
+      verify(statement).getGeneratedKeys();
+      verify(resultSet).next();
+      verify(resultSet).getInt(TableColumnsPost.USER_ID.getName());
+      assertThat(postId).isEqualTo(insertedId);
     }
 
   }
@@ -184,16 +203,15 @@ public class PostRepositoryTest {
 
     private int limit = 20;
     private int offset = 20;
-    private String orderBy = TableColumnsPost.ID.getName();
+    private TableColumnsPost orderBy = TableColumnsPost.ID;
 
     private OrderType orderAsc = OrderType.ASC;
     private OrderType orderDesc = OrderType.DESC;
 
-
     @Test
-    public void findAll_Throw_IllegalArgumentException() throws IllegalArgumentException {
-      String invalidColumnName = "hi";
-      Integer invalidLimit = limit;
+    public void findAll_Throw_IllegalArgumentException_When_Limit_Invalid() throws IllegalArgumentException {
+      TableColumnsPost invalidColumnName = TableColumnsPost.ID;
+      Integer invalidLimit = 0;
       Integer invalidOffset = offset;
 
       IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

@@ -69,9 +69,9 @@ public class PostRepositoryImpl implements PostRepository {
 
   @Override
   public Integer insert(Post post) throws SQLException {
-    String insertQuery = "INSERT INTO " + TableColumnsPost.TABLE.getName() + "("
-            + TableColumnsPost.USER_ID + ","
-            + TableColumnsPost.TEXT_CONTENT + ")"
+    String insertQuery = "INSERT INTO " + TableColumnsPost.TABLE.getName() + " ("
+            + TableColumnsPost.USER_ID.getName() + ","
+            + TableColumnsPost.TEXT_CONTENT.getName() + ")"
             + " VALUES (?, ?)";
 
     Integer createdPostId = null;
@@ -83,11 +83,11 @@ public class PostRepositoryImpl implements PostRepository {
 
           statement.executeUpdate();
 
-        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-          if (generatedKeys.next()) {
-            createdPostId = generatedKeys.getInt(1);
+          try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+              createdPostId = generatedKeys.getInt(TableColumnsPost.USER_ID.getName());
+            }
           }
-        }
       }
     }
 
@@ -95,17 +95,17 @@ public class PostRepositoryImpl implements PostRepository {
   }
 
   @Override
-  public List<Post> findAll(OrderType order, String orderBy, int limit, int offset) throws SQLException, IllegalArgumentException {
-    if (!isValidParamsForFindAll(orderBy, limit, offset)) {
+  public List<Post> findAll(OrderType order, TableColumnsPost orderBy, int limit, int offset) throws SQLException, IllegalArgumentException {
+    if (!isValidParamsForFindAll(limit, offset)) {
       throw new IllegalArgumentException("Invalid parameters: Please check parameter");
     }
 
     String query = "SELECT * FROM "
             + TableColumnsPost.TABLE.getName()
-            + " ORDER BY " + orderBy + " " + order.toString()
+            + " ORDER BY " + orderBy.getName() + " " + order.toString()
             + " limit ? "
             + " offset ?";
-    
+
     List<Post> postList = new LinkedList<>();
 
     try (Connection conn = dataSource.getConnection()) {
@@ -114,7 +114,7 @@ public class PostRepositoryImpl implements PostRepository {
         statement.setInt(2, offset);
 
         try (ResultSet rs = statement.executeQuery()) {
-          while (rs.next()) {
+          while (rs != null && rs.next()) {
             postList.add(resultSetToPost(rs));
           }
         }
@@ -124,12 +124,11 @@ public class PostRepositoryImpl implements PostRepository {
     return postList;
   }
 
-  private boolean isValidParamsForFindAll(String orderBy, int limit, int offset) {
-    boolean isValidSort = TableColumnsPost.isValidColumn(orderBy);
-    boolean isValidLimit = limit >= 0;
+  private boolean isValidParamsForFindAll(int limit, int offset) {
+    boolean isValidLimit = limit > 0;
     boolean isValidOffset = offset >= 0;
 
-    return isValidSort && isValidOffset && isValidLimit;
+    return isValidOffset && isValidLimit;
   }
 
   @Override
