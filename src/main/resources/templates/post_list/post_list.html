@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <script th:inline="javascript">
+    <script th:inline="javascript" defer>
         const list = /*[[${list}]]*/ [];
-        const count = /*[[${count}]]*/ 0;
+        const _count = /*[[${count}]]*/ 0;
+
+        const count = Number(_count);
+        const params = new URLSearchParams(window.location.search);
+        const page = Number(params.get('page'));
+        const limit = Number(params.get('limit'));
+        const order = params.get('order');
+        const sort = params.get('sort');
+        const maxPageCount = Math.ceil(count / limit);
+
     </script>
-    <script th:src="@{/javascript/post_list/indicator.js}"></script>
+
 </head>
 <body>
     hi first sample
