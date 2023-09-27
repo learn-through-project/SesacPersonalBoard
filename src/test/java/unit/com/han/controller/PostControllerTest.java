@@ -196,7 +196,7 @@ public class PostControllerTest {
 
   @Nested
   class GetPostList_Test {
-    private PostListReqDto reqDto = new PostListReqDto(TableColumnsPost.ID, 10, 1);
+    private PostListReqDto reqDto = new PostListReqDto(10, 1);
 
     private List<Post> dummyList;
 
