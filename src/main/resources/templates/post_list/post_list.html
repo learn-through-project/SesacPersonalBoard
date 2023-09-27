@@ -4,11 +4,11 @@
 </head>
 <body>
     hi first sample
-    <p th:text="'Number of Posts: ' + ${result.size()}"></p>  <!-- 목록의 크기를 렌더링합니다. -->
-
+    <p th:text="'Number of Posts: ' + ${list.size()}"></p>  <!-- 목록의 크기를 렌더링합니다. -->
+    <p th:text="'Total count of List' + ${count}"></p>
     <ul>
         <li
-                th:each="post : ${result}"
+                th:each="post : ${list}"
                 th:text="${post.textContent}">
         </li>
     </ul>

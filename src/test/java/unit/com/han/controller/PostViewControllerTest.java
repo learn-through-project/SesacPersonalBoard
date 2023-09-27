@@ -2,7 +2,6 @@ package unit.com.han.controller;
 
 import com.han.controller.PostViewControllerImpl;
 import com.han.dto.PostListDto.PostListDto;
-import com.han.dto.PostListDto.PostListResDto;
 import com.han.model.Post;
 import com.han.service.PostService;
 import org.junit.jupiter.api.Nested;
@@ -31,9 +30,6 @@ public class PostViewControllerTest {
   @Mock
   private BindingResult bindingResult;
 
-  @Mock
-  private ModelAndView modelAndView;
-
   @InjectMocks
   private PostViewControllerImpl postViewController;
 
@@ -47,8 +43,6 @@ public class PostViewControllerTest {
     Post postDummy = new Post(1);
 
     List<Post> dummyList = List.of(postDummy, postDummy);
-
-    PostListResDto resDto = new PostListResDto(dummyList, count);
 
     @Test
     public void getPostList_Throws_Exception_When_TotalCount_Throws() throws SQLException {
@@ -80,7 +74,8 @@ public class PostViewControllerTest {
       verify(bindingResult).hasErrors();
       verify(postService).getPostList(dto);
       verify(postService).getPostListTotalCount();
-      assertThat(mv.getModel().get(PostViewControllerImpl.RESULT)).isEqualTo(resDto);
+      assertThat(mv.getModel().get("list")).isEqualTo(dummyList);
+      assertThat(mv.getModel().get("count")).isEqualTo(count);
     }
   }
 }

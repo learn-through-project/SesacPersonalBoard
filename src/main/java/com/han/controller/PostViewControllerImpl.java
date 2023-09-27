@@ -3,7 +3,6 @@ package com.han.controller;
 import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.dto.PostListDto.PostListDto;
-import com.han.dto.PostListDto.PostListResDto;
 import com.han.model.Post;
 import com.han.service.PostService;
 import jakarta.validation.Valid;
@@ -16,12 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 @Log4j2
 @Controller
 public class PostViewControllerImpl implements PostViewController {
-  public static final String RESULT = "result";
   private final PostService postService;
 
   @Autowired
@@ -37,8 +34,9 @@ public class PostViewControllerImpl implements PostViewController {
     int count = postService.getPostListTotalCount();
 
     ModelAndView mv = new ModelAndView(ViewName.POST_LIST);
-    PostListResDto result = new PostListResDto(list, count);
-    mv.addObject(RESULT, result);
+
+    mv.addObject("list", list);
+    mv.addObject("count", count);
     return mv;
   }
 }
