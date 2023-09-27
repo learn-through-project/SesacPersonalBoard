@@ -4,7 +4,7 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListReqDto;
+import com.han.dto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public List<Post> getPostList(PostListReqDto dto) throws SQLException {
+  public List<Post> getPostList(PostListDto dto) throws SQLException {
     int page = dto.getPage();
     int limit = dto.getLimit();
     OrderType order = dto.getOrder();

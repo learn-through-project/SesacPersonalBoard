@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class PostListReqDto {
+public class PostListDto {
 
   @NotNull(message = "Limit can not be null")
   private final int limit;

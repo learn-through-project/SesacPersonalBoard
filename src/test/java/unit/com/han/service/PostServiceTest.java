@@ -4,7 +4,7 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListReqDto;
+import com.han.dto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -209,7 +209,7 @@ public class PostServiceTest {
 
   @Nested
   class GetPostList_Test {
-    private PostListReqDto dto = new PostListReqDto(10, 1);
+    private PostListDto dto = new PostListDto(10, 1);
     private int limit;
     private int offset;
     private TableColumnsPost sort;

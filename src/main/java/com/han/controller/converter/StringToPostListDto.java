@@ -1,2 +1,4 @@
-package com.han.controller.converter;public class StringToPostListDto {
+package com.han.controller.converter;
+
+public class StringToPostListDto {
 }

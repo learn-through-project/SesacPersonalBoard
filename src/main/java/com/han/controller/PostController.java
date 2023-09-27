@@ -1,7 +1,7 @@
 package com.han.controller;
 
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListReqDto;
+import com.han.dto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface PostController {
-  public ResponseEntity<List<Post>> getPostList(@Valid PostListReqDto reqDto) throws SQLException;
+  public ResponseEntity<List<Post>> getPostList(@Valid PostListDto reqDto) throws SQLException;
 
   public ResponseEntity<Post> getPostDetail(@PathVariable @Min(1) int postId) throws SQLException;
 
