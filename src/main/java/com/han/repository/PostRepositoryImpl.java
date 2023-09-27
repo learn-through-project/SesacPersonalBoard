@@ -25,6 +25,24 @@ public class PostRepositoryImpl implements PostRepository {
     this.dataSource = dataSource;
   }
 
+
+  @Override
+  public int getPostTotalCount() throws SQLException {
+    String countQuery = "SELECT COUNT(*) FROM " + TableColumnsPost.TABLE.getName();
+    int count = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(countQuery)) {
+        try (ResultSet rs = statement.executeQuery()) {
+          if (rs != null && rs.next()) {
+            count = rs.getInt(1);
+          }
+        }
+      }
+    }
+
+    return count;
+  }
   @Override
   public boolean deletePermanently(int postId) throws SQLException {
     String deleteQuery = "DELETE FROM "+ TableColumnsPost.TABLE.getName() +" WHERE "
@@ -120,7 +138,7 @@ public class PostRepositoryImpl implements PostRepository {
         }
       }
     }
-
+    
     return postList;
   }
 
