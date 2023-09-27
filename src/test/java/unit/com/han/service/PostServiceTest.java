@@ -243,7 +243,7 @@ public class PostServiceTest {
 
       when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
 
-      dto.setOrder(orderDesc);
+      dto.setOrder(OrderType.DESC.name());
       List<Post> list = postService.getPostList(dto);
 
       verify(postRepository).findAll(orderDesc, sort, limit, offset);
