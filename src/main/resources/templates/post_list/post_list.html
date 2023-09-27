@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script th:inline="javascript">
+        const list = /*[[${list}]]*/ [];
+        const count = /*[[${count}]]*/ 0;
+    </script>
+    <script th:src="@{/javascript/post_list/indicator.js}"></script>
 </head>
 <body>
     hi first sample
@@ -12,5 +17,8 @@
                 th:text="${post.textContent}">
         </li>
     </ul>
+    <div>
+        <div th:insert="~{/post_list/components/indicator :: indicator}"></div>
+    </div>
 </body>
 </html>
