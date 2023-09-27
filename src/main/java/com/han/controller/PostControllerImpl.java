@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Log4j2
-@RestController
+@RestController()
 @Validated
+@RequestMapping(EndPoint.API)
 public class PostControllerImpl implements PostController {
 
   private final PostService postService;

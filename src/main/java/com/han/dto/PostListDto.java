@@ -21,10 +21,10 @@ public class PostListDto {
   private Integer page;
 
   @ValidEnum(enumClass = OrderType.class, message = "Check order type")
-  private OrderType order;
+  private OrderType order = OrderType.ASC;
 
   @ValidEnum(enumClass = SortType.class, message = "Check sort type")
-  private SortType sort;
+  private SortType sort = SortType.NEW;
 
   public static PostListDto getDefaultInstance() {
     return new PostListDto(PostListDto.defaultLimit, PostListDto.defaultPage);
@@ -37,15 +37,10 @@ public class PostListDto {
 
   public void setOrder(String order) {
     Optional<OrderType> orderType = OrderType.getOrderType(order);
-    if (orderType.isPresent()) {
-      this.order = orderType.get();
-    }
-
+    this.order = orderType.orElse(null);
   }
   public void setSort(String sort) {
       Optional<SortType> sortType = SortType.getSortType(sort);
-      if (sortType.isPresent()) {
-        this.sort = sortType.get();
-      }
+      this.sort = sortType.orElse(null);
     }
 }
