@@ -12,12 +12,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostListDto {
   @NotNull(message = "Limit can not be null")
-  private final int limit;
+  private int limit;
 
   @NotNull(message = "Page can not be null")
-  private final int page;
+  private int page;
   private OrderType order = OrderType.ASC;
   private SortType sort = SortType.NEW;
+
+  public PostListDto(int limit, int page) {
+    this.limit = limit;
+    this.page = page;
+  }
 
   public void setOrder(String order) {
     Optional<OrderType> orderType = OrderType.getOrderType(order);
