@@ -49,6 +49,7 @@ public class PostControllerImpl implements PostController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+  // TODO - @Valid @RequestParam("post") PostCreateDto dto 변경 필요
   @Override
   @PostMapping(EndPoint.POST)
   public ResponseEntity<Boolean> createPost(
