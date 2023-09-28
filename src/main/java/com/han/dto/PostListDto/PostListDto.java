@@ -1,4 +1,4 @@
-package com.han.dto;
+package com.han.dto.PostListDto;
 
 import com.han.annotation.ValidEnum.ValidEnum;
 import com.han.constants.OrderType;

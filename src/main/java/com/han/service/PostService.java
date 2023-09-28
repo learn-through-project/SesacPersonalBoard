@@ -1,7 +1,7 @@
 package com.han.service;
 
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListDto;
+import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,4 +17,5 @@ public interface PostService {
   boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException, IOException;
   boolean editPost(PostUpdateDto dto) throws SQLException;
   boolean deletePermanently(int postId) throws SQLException;
+  int getPostListTotalCount() throws SQLException;
 }

@@ -1,0 +1,19 @@
+<div lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="indicator">
+    <div style="display: flex; flex-direction: row; background: yellowgreen">
+        <button class="prev">prev</button>
+        <div
+                class="indicator"
+                style="display: flex; flex-direction: row; background: yellowgreen"
+        ></div>
+        <button class="next">next</button>
+    </div>
+
+    <style>
+      .isSelected {
+        color: red;
+      }
+
+    </style>
+
+    <script th:src="@{/javascript/post_list/indicator.js}" type="module"></script>
+</div>

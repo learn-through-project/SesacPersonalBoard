@@ -4,7 +4,7 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListDto;
+import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -41,6 +41,30 @@ public class PostServiceTest {
 
   @InjectMocks
   private PostServiceImpl postService;
+
+  @Nested
+  class GetPostTotalCount_Test {
+    private int totalCount = 100;
+
+    @Test
+    public void getPostTotalCount_Throws_Exception() throws SQLException {
+      when(postRepository.getPostTotalCount()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postService.getPostListTotalCount());
+
+      verify(postRepository).getPostTotalCount();
+    }
+
+    @Test
+    public void getPostTotalCount_Return_Count() throws SQLException {
+      when(postRepository.getPostTotalCount()).thenReturn(totalCount);
+
+      int count = postService.getPostListTotalCount();
+
+      verify(postRepository).getPostTotalCount();
+      assertThat(count).isEqualTo(totalCount);
+    }
+
+  }
 
   @Nested
   class DeletePermanently_Test {

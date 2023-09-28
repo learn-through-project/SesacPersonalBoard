@@ -14,4 +14,5 @@ public interface PostRepository {
   public Integer insert(Post post) throws SQLException;
   public boolean update(Post post) throws SQLException;
   public boolean deletePermanently(int postId) throws SQLException;
+  public int getPostTotalCount() throws SQLException;
 }

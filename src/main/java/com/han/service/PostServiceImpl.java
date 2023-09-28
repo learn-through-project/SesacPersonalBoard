@@ -4,7 +4,7 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostListDto;
+import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.repository.PostRepository;
@@ -33,6 +33,12 @@ public class PostServiceImpl implements PostService {
     this.postRepository = postRepository;
     this.postImageService = postImageService;
 
+  }
+
+  @Override
+  public int getPostListTotalCount() throws SQLException {
+    int count = postRepository.getPostTotalCount();
+    return count;
   }
 
   @Override
@@ -71,6 +77,7 @@ public class PostServiceImpl implements PostService {
 
     int offset = (page - 1) * limit;
     List<Post> list = postRepository.findAll(order, sort, limit, offset);
+
 
     return list;
   }

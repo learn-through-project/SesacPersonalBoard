@@ -60,6 +60,32 @@ public class PostRepositoryTest {
   }
 
   @Nested
+  class GetPostTotalCount_Test {
+    private int count = 1;
+
+    @Test
+    public void getPostTotalCount_Throws_Exception() throws SQLException {
+      when (statement.executeQuery()).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postRepository.getPostTotalCount());
+
+      verify(statement).executeQuery();
+    }
+    @Test
+    public void getPostTotalCount_Return_Count() throws SQLException {
+      when (statement.executeQuery()).thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(true);
+      when(resultSet.getInt(1)).thenReturn(count);
+
+      int count = postRepository.getPostTotalCount();
+
+      verify(statement).executeQuery();
+      verify(resultSet).next();
+      verify(resultSet).getInt(1);
+      assertThat(count).isGreaterThan(0);
+    }
+  }
+
+  @Nested
   class DeletePermanently_Test {
     int success = 1;
     int fail = 0;
