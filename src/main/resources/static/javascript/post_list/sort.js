@@ -1,16 +1,16 @@
-const orderElement = document.querySelector(".order");
+const sortElement = document.querySelector(".sort");
      document.addEventListener("DOMContentLoaded", () => {
-     console.log('order', order);
-          orderElement.value = order;
+     console.log('sotrt', sort);
+          sortElement.value = sort;
         });
 
-      orderElement.addEventListener("change", function (event) {
+      sortElement.addEventListener("change", function (event) {
           const path = window.location.pathname;
           const url = createUrl({
             page: 1,
             limit,
-            order: event.target.value,
-            sort,
+            order,
+            sort: event.target.value,
           });
 
           window.location.href = url;
