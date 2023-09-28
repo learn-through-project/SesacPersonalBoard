@@ -1,5 +1,6 @@
 package unit.com.han.controller;
 
+import com.han.constants.ViewName;
 import com.han.controller.PostViewControllerImpl;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
@@ -10,9 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.servlet.ModelAndView;
-
 import java.sql.SQLException;
 import java.util.List;
 
@@ -29,6 +29,9 @@ public class PostViewControllerTest {
 
   @Mock
   private BindingResult bindingResult;
+
+  @Mock
+  private Model model;
 
   @InjectMocks
   private PostViewControllerImpl postViewController;
@@ -48,7 +51,7 @@ public class PostViewControllerTest {
     public void getPostList_Throws_Exception_When_TotalCount_Throws() throws SQLException {
       when(postService.getPostList(dto)).thenReturn(dummyList);
       when(postService.getPostListTotalCount()).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postViewController.getPostList(dto, bindingResult));
+      assertThrows(SQLException.class, () -> postViewController.getPostList(dto, bindingResult, model));
 
       verify(bindingResult).hasErrors();
       verify(postService).getPostList(dto);
@@ -57,7 +60,7 @@ public class PostViewControllerTest {
     @Test
     public void getPostList_Throws_Exception_When_PostList_Throws() throws SQLException {
       when(postService.getPostList(dto)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postViewController.getPostList(dto, bindingResult));
+      assertThrows(SQLException.class, () -> postViewController.getPostList(dto, bindingResult, model));
 
       verify(bindingResult).hasErrors();
       verify(postService).getPostList(dto);
@@ -69,13 +72,14 @@ public class PostViewControllerTest {
       when(postService.getPostListTotalCount()).thenReturn(count);
       when(bindingResult.hasErrors()).thenReturn(false);
 
-      ModelAndView mv = postViewController.getPostList(dto, bindingResult);
+      String viewName = postViewController.getPostList(dto, bindingResult, model);
 
       verify(bindingResult).hasErrors();
       verify(postService).getPostList(dto);
       verify(postService).getPostListTotalCount();
-      assertThat(mv.getModel().get("list")).isEqualTo(dummyList);
-      assertThat(mv.getModel().get("count")).isEqualTo(count);
+      verify(model).addAttribute("list", dummyList);
+      verify(model).addAttribute("count", count);
+      assertThat(viewName).isEqualTo(ViewName.POST_LIST);
     }
   }
 }
