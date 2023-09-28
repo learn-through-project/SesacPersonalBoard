@@ -1,4 +1,4 @@
-     const createUrl = ({ page, limit, order, sort }) => {
+ export const createUrl = ({ page, limit, order, sort }) => {
            const dummyUrl = "http://www.dummy.com";
            const url = new URL(`${dummyUrl}/post`);
            url.searchParams.append("page", page);

@@ -1,6 +1,8 @@
+import { order, limit, sort } from './init.js';
+import { createUrl } from './utils.js';
+
 const sortElement = document.querySelector(".sort");
      document.addEventListener("DOMContentLoaded", () => {
-     console.log('sotrt', sort);
           sortElement.value = sort;
         });
 

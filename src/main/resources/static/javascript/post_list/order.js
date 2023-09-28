@@ -1,6 +1,8 @@
+import { order, limit, sort } from './init.js';
+import { createUrl } from './utils.js';
+
 const orderElement = document.querySelector(".order");
      document.addEventListener("DOMContentLoaded", () => {
-     console.log('order', order);
           orderElement.value = order;
         });
 

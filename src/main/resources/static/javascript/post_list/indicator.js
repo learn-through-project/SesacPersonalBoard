@@ -1,3 +1,6 @@
+import { order, limit, sort, page, maxPageCount } from './init.js';
+import { createUrl } from './utils.js';
+
 const PAGE_RANGE = 5;
 
 const getLastPage = (maxPage, currentPage) => {
