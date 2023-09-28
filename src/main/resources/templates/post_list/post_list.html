@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script th:src="@{/javascript/post_list/utils.js}" defer></script>
     <script th:inline="javascript" defer>
         const list = /*[[${list}]]*/ [];
         const _count = /*[[${count}]]*/ 0;
 
         const count = Number(_count);
         const params = new URLSearchParams(window.location.search);
-        const page = Number(params.get('page'));
-        const limit = Number(params.get('limit'));
-        const order = params.get('order');
-        const sort = params.get('sort');
-        const maxPageCount = Math.ceil(count / limit);
+        const page = Number(params.get('page')) || 1;
+        const limit = Number(params.get('limit')) || 10;
+        const order = params.get('order') ?? 'asc';
+        const sort = params.get('sort') ?? 'new';
 
+        const maxPageCount = Math.ceil(count / limit);
     </script>
 
 </head>
 <body>
-    hi first sample
-    <p th:text="'Number of Posts: ' + ${list.size()}"></p>  <!-- 목록의 크기를 렌더링합니다. -->
+
+    <p th:text="'Number of Posts: ' + ${list.size()}"></p>
     <p th:text="'Total count of List' + ${count}"></p>
+
+    <div>
+        <div th:insert="~{/post_list/components/order :: order}"></div>
+    </div>
+
     <ul>
         <li
                 th:each="post : ${list}"
