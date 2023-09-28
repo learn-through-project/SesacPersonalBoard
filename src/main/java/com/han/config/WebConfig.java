@@ -1,6 +1,7 @@
 package com.han.config;
 
 import com.han.constants.EndPoint;
+import com.han.constants.ViewName;
 import com.han.controller.converter.StringToPostCreateDtoConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -16,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
   }
   @Override
   public void addViewControllers(ViewControllerRegistry registry) {
-    registry.addViewController(EndPoint.POST).setViewName("postList");
+    registry.addViewController(EndPoint.POST_NEW).setViewName(ViewName.POST_NEW_VIEW);
   }
 }
 

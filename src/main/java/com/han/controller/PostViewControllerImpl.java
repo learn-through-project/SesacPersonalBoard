@@ -2,6 +2,7 @@ package com.han.controller;
 
 import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
+import com.han.dto.PostCreateDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -12,7 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -26,7 +31,27 @@ public class PostViewControllerImpl implements PostViewController {
     this.postService = postService;
   }
 
-  @GetMapping(EndPoint.POST)
+
+  @PostMapping(EndPoint.POST)
+  @Override
+  public String createPost(@Valid @RequestParam("post") PostCreateDto dto,
+                           @RequestParam("images") List<MultipartFile> images,
+                           BindingResult br,
+                           Model model) throws SQLException, IOException {
+
+    if (br.hasErrors()) {
+      return ViewName.POST_NEW_VIEW;
+    }
+
+    boolean isSuccess = postService.createPost(dto, images);
+
+    model.addAttribute("isSuccess", isSuccess);
+    return ViewName.POST_NEW_RESULT;
+  }
+
+
+  @GetMapping(EndPoint.POSTS)
+  @Override
   public String getPostList(@Valid PostListDto dto, BindingResult br, Model model) throws SQLException {
     PostListDto validDto = !br.hasErrors() ? dto : PostListDto.getDefaultInstance();
 
