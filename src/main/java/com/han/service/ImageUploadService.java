@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ImageUploadService {
   boolean deleteImage(String pathname);
+  void deleteImages (List<MultipartFile> files, String pathPrefix) throws IOException;
   String uploadImage(MultipartFile file, String pathname) throws IOException;
   List<String> uploadImages(List<MultipartFile> files, String pathPrefix) throws IOException;
 }

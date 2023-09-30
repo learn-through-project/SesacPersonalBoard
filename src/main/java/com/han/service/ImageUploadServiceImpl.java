@@ -55,6 +55,12 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     return isSuccess;
   }
 
+  @Override
+  public void deleteImages(List<MultipartFile> files, String pathPrefix) throws IOException {
+    for (int i = 0; i < files.size(); i++) {
+      deleteImage(pathPrefix + "/" + i);
+    }
+  }
 
   @Override
   public String uploadImage(MultipartFile file, String pathname) throws IOException {

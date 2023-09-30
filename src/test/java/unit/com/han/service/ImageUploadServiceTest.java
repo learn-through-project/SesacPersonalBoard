@@ -34,12 +34,78 @@ public class ImageUploadServiceTest {
   @InjectMocks
   private ImageUploadServiceImpl imageUploadService;
 
+  private String pathPrefix = "post/1";
+
+  @Nested
+  class DeleteImages_Test {
+
+    private List<MultipartFile> dummyFiles;
+
+    @BeforeEach
+    public void setUp() {
+      this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
+    }
+    @Test
+    public void deleteImages_Try_All_Some_Fails() throws IOException {
+
+      for (int i = 0; i < dummyFiles.size(); i++) {
+        when(storage.get(pathPrefix + "/" + i)).thenReturn(blob);
+        when(blob.delete()).thenReturn(i <1);
+      }
+
+      imageUploadService.deleteImages(dummyFiles, pathPrefix);
+
+      for (int j = 0; j < dummyFiles.size(); j++) {
+        verify(storage).get(pathPrefix + "/" + j);
+      }
+      verify(blob, times(dummyFiles.size())).delete();
+    }
+    @Test
+    public void deleteImages_All_Success() throws IOException {
+
+      for (int i = 0; i < dummyFiles.size(); i++) {
+        when(storage.get(pathPrefix + "/" + i)).thenReturn(blob);
+        when(blob.delete()).thenReturn(true);
+      }
+
+      imageUploadService.deleteImages(dummyFiles, pathPrefix);
+
+      for (int j = 0; j < dummyFiles.size(); j++) {
+        verify(storage).get(pathPrefix + "/" + j);
+      }
+      verify(blob, times(dummyFiles.size())).delete();
+    }
+  }
+
+  @Nested
+  class DeleteImage_Test {
+
+    private String pathname = pathPrefix + "/0";
+
+    @Test
+    public void deleteImage_Return_False() {
+      when(storage.get(pathname)).thenReturn(blob);
+      when(blob.delete()).thenReturn(false);
+
+      boolean isSuccess = imageUploadService.deleteImage(pathname);
+
+      assertThat(isSuccess).isFalse();
+    }
+    @Test
+    public void deleteImage_Return_Success() {
+      when(storage.get(pathname)).thenReturn(blob);
+      when(blob.delete()).thenReturn(true);
+
+      boolean isSuccess = imageUploadService.deleteImage(pathname);
+
+      assertThat(isSuccess).isTrue();
+    }
+  }
+
   @Nested
   class UploadImages_Test {
 
     private List<MultipartFile> dummyFiles;
-
-    private String pathPrefix = "post/1";
 
     @BeforeEach
     public void setUp() {
@@ -79,11 +145,10 @@ public class ImageUploadServiceTest {
     }
   }
 
-
   @Nested
   class UploadImage_Test {
 
-    private String pathname = "post/1/0";
+    private String pathname = pathPrefix + "/0";
 
     @Test
     public void uploadImage_Throws_IOException_When_GetBytes_Fail() throws IOException {
