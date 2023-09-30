@@ -13,9 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -31,24 +31,27 @@ public class PostViewControllerImpl implements PostViewController {
     this.postService = postService;
   }
 
+  @GetMapping(EndPoint.POST_NEW)
+  @Override
+  public String showCreatePostForm(@Valid @ModelAttribute("post") PostCreateDto dto, BindingResult br) {
+    // ViewName.POST_NEW_VIEW 에서 br을 사용하고 있습니다
+    // model에 isRedirected 라는 0 또는 1을 갖는 플래그가 필요합니다.
+    return ViewName.POST_NEW_VIEW;
+  }
 
   @PostMapping(EndPoint.POST)
   @Override
-  public String createPost(@Valid @RequestParam("post") PostCreateDto dto,
-                           @RequestParam("images") List<MultipartFile> images,
-                           BindingResult br,
-                           Model model) throws SQLException, IOException {
+  public String createPost(
+          @Valid @ModelAttribute("post") PostCreateDto dto,
+          BindingResult br,
+          RedirectAttributes redirectAttributes
+  ) throws SQLException, IOException {
 
-    if (br.hasErrors()) {
-      return ViewName.POST_NEW_VIEW;
-    }
 
-    boolean isSuccess = postService.createPost(dto, images);
-
-    model.addAttribute("isSuccess", isSuccess);
-    return ViewName.POST_NEW_RESULT;
+    redirectAttributes.addFlashAttribute("post", dto);
+    redirectAttributes.addFlashAttribute("isRedirected", 1);
+    return "redirect:" + EndPoint.POST_NEW;
   }
-
 
   @GetMapping(EndPoint.POSTS)
   @Override

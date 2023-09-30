@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -36,6 +37,8 @@ public class PostViewControllerTest {
   private BindingResult bindingResult;
 
   @Mock
+  private RedirectAttributes redirectAttributes;
+  @Mock
   private Model model;
 
   @Mock
@@ -45,9 +48,19 @@ public class PostViewControllerTest {
   private PostViewControllerImpl postViewController;
 
   @Nested
-  class CreatePost_Test {
-    private PostCreateDto dto = new PostCreateDto(1, "sample post");
+  class ShowCreatePostForm_Test {
+    private PostCreateDto dto = new PostCreateDto();
+    @Test
+    public void showCreatePostForm_Return_View() {
+      String viewName = postViewController.showCreatePostForm(dto, bindingResult);
+      assertThat(viewName).isEqualTo(ViewName.POST_NEW_VIEW);
+    }
+  }
 
+  @Nested
+  class CreatePost_Test {
+
+    private PostCreateDto dto = new PostCreateDto();
     private List<MultipartFile> dummyFiles;
 
     @BeforeEach
@@ -58,13 +71,13 @@ public class PostViewControllerTest {
     @Test
     public void createPost_Throws_Exception_When_Service_Throws() throws SQLException, IOException {
       when(postService.createPost(dto, dummyFiles)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postViewController.createPost(dto, dummyFiles, bindingResult, model));
+      assertThrows(SQLException.class, () -> postViewController.createPost(dto, bindingResult, redirectAttributes));
     }
 
     @Test
     public void createPost_Return_FromView_When_Input_Invalid() throws SQLException, IOException {
       when(bindingResult.hasErrors()).thenReturn(true);
-      String viewName = postViewController.createPost(dto, dummyFiles, bindingResult, model);
+      String viewName = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
       assertThat(viewName).isEqualTo(ViewName.POST_NEW_VIEW);
     }
@@ -72,7 +85,7 @@ public class PostViewControllerTest {
     @Test
     public void createPost_Return_ResultView_With_IsSuccess_False() throws SQLException, IOException {
       when(postService.createPost(dto, dummyFiles)).thenReturn(false);
-      String viewName = postViewController.createPost(dto, dummyFiles, bindingResult, model);
+      String viewName = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
       verify(model).addAttribute("isSuccess", false);
       assertThat(viewName).isEqualTo(ViewName.POST_NEW_RESULT);
@@ -80,7 +93,7 @@ public class PostViewControllerTest {
     @Test
     public void createPost_Return_ResultView_With_IsSuccess_True() throws SQLException, IOException {
       when(postService.createPost(dto, dummyFiles)).thenReturn(true);
-      String viewName = postViewController.createPost(dto, dummyFiles, bindingResult, model);
+      String viewName = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
       verify(model).addAttribute("isSuccess", true);
       assertThat(viewName).isEqualTo(ViewName.POST_NEW_RESULT);
