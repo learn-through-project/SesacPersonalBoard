@@ -5,6 +5,7 @@ import com.han.repository.PostImageRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ public class PostImageServiceImpl implements PostImageService {
     this.imageUploadService = imageUploadService;
   }
 
+
+  @Transactional
   @Override
   public boolean createPostImage(Integer postId, List<MultipartFile> files) throws Exception {
     List<Boolean> results = new LinkedList<>();

@@ -75,6 +75,7 @@ public class PostImageRepositoryImpl implements PostImageRepository {
     int result = 0;
 
     try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
       try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
         statement.setInt(1, image.getPostId());
         statement.setString(2, image.getUrl());
