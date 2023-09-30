@@ -164,9 +164,16 @@ public class PostServiceTest {
       this.dummyPost = new Post(userId, title, content);
     }
 
-
     @Test
-    public void createPost_Throw_Exception() throws SQLException {
+    public void createPost_Throw_Exception_When_Create_Image_Throw() throws Exception {
+      when(postRepository.insert(dummyPost)).thenReturn(postId);
+      when(postImageService.createPostImage(postId, dummyDto.getImages())).thenThrow(Exception.class);
+      assertThrows(Exception.class, () -> postService.createPost(dummyDto));
+
+      verify(postRepository).insert(dummyPost);
+    }
+    @Test
+    public void createPost_Throw_Exception_When_Insert_Throw() throws SQLException {
       when(postRepository.insert(dummyPost)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postService.createPost(dummyDto));
 
@@ -174,17 +181,7 @@ public class PostServiceTest {
     }
 
     @Test
-    public void createPost_Throws_NullPointException_When_Insert_Fail() throws SQLException, IOException {
-      Integer nullPostId = null;
-      when(postRepository.insert(dummyPost)).thenReturn(null);
-      assertThrows(NullPointerException.class, () -> postImageService.createPostImage(nullPostId, dummyDto.getImages()));
-      assertThrows(NullPointerException.class, () -> postService.createPost(dummyDto));
-
-      verify(postRepository).insert(dummyPost);
-    }
-
-    @Test
-    public void createPost_Return_True() throws SQLException, IOException {
+    public void createPost_Return_True() throws Exception {
       when(postRepository.insert(dummyPost)).thenReturn(postId);
       when(postImageService.createPostImage(postId, dummyDto.getImages())).thenReturn(true);
 

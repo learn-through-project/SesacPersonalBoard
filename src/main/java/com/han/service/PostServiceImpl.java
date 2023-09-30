@@ -54,14 +54,17 @@ public class PostServiceImpl implements PostService {
     return result;
   }
 
-
-  @Transactional(rollbackFor = {SQLException.class, IOException.class})
+  @Transactional(rollbackFor = {Exception.class})
   @Override
-  public boolean createPost(PostCreateDto dto) throws SQLException, IOException {
-    Post post = fromCreateDtoToPost(dto);
+  public boolean createPost(PostCreateDto dto) throws Exception {
+    boolean isSuccess = false;
 
+    Post post = fromCreateDtoToPost(dto);
     Integer postId = postRepository.insert(post);
-    boolean isSuccess = postImageService.createPostImage(postId, dto.getImages());
+
+    if (postId != null) {
+      isSuccess = postImageService.createPostImage(postId, dto.getImages());
+    }
 
     return isSuccess;
   }

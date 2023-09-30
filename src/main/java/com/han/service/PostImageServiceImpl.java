@@ -47,7 +47,7 @@ public class PostImageServiceImpl implements PostImageService {
       imageUploadService.deleteImages(files, pathPrefix);
       throw new Exception("이미지 삽입에 실패하였습니다.");
     }
-    
+
     return true;
   }
 }
