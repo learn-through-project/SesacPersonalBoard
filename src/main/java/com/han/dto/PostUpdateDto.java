@@ -11,8 +11,9 @@ public class PostUpdateDto {
   @NotNull
   private final Integer id;
 
-  @NotNull
-  private final Integer author;
+  private final int userId;
+
+  private String title;
 
   @NotEmpty
   private final String textContent;

@@ -8,6 +8,7 @@ public enum TableColumnsPost {
   TABLE("posts", String.class),
   ID("id", Integer.class),
   USER_ID("user_id", Integer.class),
+  TITLE("title", String.class),
   TEXT_CONTENT("text_content", String.class),
   CREATED_AT("created_at", LocalDateTime.class),
   UPDATED_AT("updated_at", LocalDateTime.class);

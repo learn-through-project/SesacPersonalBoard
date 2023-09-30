@@ -18,13 +18,17 @@ public class PostCreateDto {
 
   @NotEmpty (message = "not empty")
   @Size(min = 5, message = "At least 5 long")
+  private String title;
 
+  @NotEmpty (message = "not empty")
+  @Size(min = 5, message = "At least 5 long")
   private String textContent;
   @Size(min = 1, message = "At least one image is required")
   private List<MultipartFile> images;
 
-  public PostCreateDto(int userId, String textContent, List<MultipartFile> images) {
+  public PostCreateDto(int userId, String title, String textContent, List<MultipartFile> images) {
     this.userId = userId;
+    this.title = title;
     this.textContent = textContent;
     this.images = images;
   }

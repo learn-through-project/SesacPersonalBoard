@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 @Data
 public class Post {
 
-
   private Integer id;
   private Integer userId;
+  private String title;
   private String textContent;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -18,15 +18,16 @@ public class Post {
   public Post (Integer id) {
     this.id = id;
   }
-
-  public Post (Integer userId, String textContent) {
+  public Post (Integer userId, String title, String textContent) {
     this.userId = userId;
+    this.title = title;
     this.textContent = textContent;
   }
 
-  public Post (Integer postId, Integer userId, String textContent) {
+  public Post (Integer postId, Integer userId, String title, String textContent) {
     this.id = postId;
     this.userId = userId;
+    this.title = title;
     this.textContent = textContent;
   }
 }

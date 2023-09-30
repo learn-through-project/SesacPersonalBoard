@@ -1,0 +1,13 @@
+      .indicator-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .isSelected {
+            color: red;
+        }

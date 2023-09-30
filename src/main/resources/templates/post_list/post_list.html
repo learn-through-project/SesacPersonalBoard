@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" th:href="@{/post_list/css/post_list.css}"/>
     <script th:inline="javascript" defer>
         const list = /*[[${list}]]*/ [];
         const __count = /*[[${count}]]*/ 0;
@@ -9,32 +10,55 @@
         const _count = Number(__count);
         const _page = Number(params.get('page')) || 1;
         const _limit = Number(params.get('limit')) || 10;
-        const _order = params.get('order') ?? 'asc';
+        const _order = params.get('order') ?? 'desc';
         const _sort = params.get('sort') ?? 'new';
 
+
+
     </script>
-    <script th:src="@{/javascript/post_list/utils.js}" type="module"></script>
-    <script th:src="@{/javascript/post_list/init.js}" type="module"></script>
+    <script th:src="@{/post_list/js/utils.js}" type="module"></script>
+    <script th:src="@{/post_list/js/init.js}" type="module"></script>
+
 
 </head>
 <body>
+<div class="page">
+    <h1 class="title" th:text="'Post List - ' + ${count}">Post List</h1>
 
-    <p th:text="'Number of Posts: ' + ${list.size()}"></p>
-    <p th:text="'Total count of List' + ${count}"></p>
+    <div  class="table-option-container">
+        <div>
+            <a href="/post/new">
+                <button>
+                새 Post 작성
+                </button>
+            </a>
+        </div>
 
-    <div>
-        <div th:insert="~{/post_list/components/order :: order}"></div>
-        <div th:insert="~{/post_list/components/sort :: sort}"></div>
+        <div class="filter-container">
+            <div th:insert="~{/post_list/components/order :: order}"></div>
+            <div th:insert="~{/post_list/components/sort :: sort}"></div>
+        </div>
     </div>
 
-    <ul>
-        <li
-                th:each="post : ${list}"
-                th:text="${post.textContent}">
-        </li>
-    </ul>
-    <div>
+    <div class="table">
+        <div class="table-header">
+            <div class="cell header-cell">userId</div>
+            <div class="cell header-cell">title</div>
+            <div class="cell header-cell">textContent</div>
+            <div class="cell header-cell">updatedAt</div>
+        </div>
+
+        <a th:href="@{/post/{id}(id=${post.id})}" th:each="post : ${list}" class="table-container">
+
+            <div th:text="${post.userId}" class="cell"></div>
+            <div th:text="${post.title}" class="cell"></div>
+            <div th:text="${post.textContent}" class="cell"></div>
+            <div th:text="${post.updatedAt}" class="cell"></div>
+        </a>
+    </div>
+    <div class="indicator-container">
         <div th:insert="~{/post_list/components/indicator :: indicator}"></div>
     </div>
+</div>
 </body>
 </html>
