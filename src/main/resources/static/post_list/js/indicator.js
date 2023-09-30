@@ -12,7 +12,8 @@ const getFivePages = (lastPage) => {
   const pages = [];
 
   for (let i = 4; i >= 0; i--) {
-    pages.push(lastPage - i);
+    const page = lastPage - i;
+    if (page > 0) pages.push(page);
   }
 
   return pages;
@@ -22,13 +23,15 @@ const createEachPage = (url, text, isSelected) => {
   const component = document.createElement("a");
   component.setAttribute("href", url);
   component.innerText = text;
+  component.style.width = "20px";
+  component.style.textAlign = "center";
   if (isSelected) component.classList.add("isSelected");
 
   return component;
 };
 
 const drawIndicator = (pages, currentPage) => {
-  const container = document.querySelector(".indicator");
+  const container = document.querySelector(".page-container");
   const tags = pages.map((page) => {
     const url = createUrl({ page, limit, order, sort });
     const component = createEachPage(url, page, page == currentPage);
