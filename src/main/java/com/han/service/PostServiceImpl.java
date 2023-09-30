@@ -57,11 +57,11 @@ public class PostServiceImpl implements PostService {
 
   @Transactional(rollbackFor = {SQLException.class, IOException.class})
   @Override
-  public boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException, IOException {
+  public boolean createPost(PostCreateDto dto) throws SQLException, IOException {
     Post post = fromCreateDtoToPost(dto);
 
     Integer postId = postRepository.insert(post);
-    boolean isSuccess = postImageService.createPostImage(postId, files);
+    boolean isSuccess = postImageService.createPostImage(postId, dto.getImages());
 
     return isSuccess;
   }

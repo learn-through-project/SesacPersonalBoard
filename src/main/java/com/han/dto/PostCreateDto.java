@@ -13,10 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 public class PostCreateDto {
 
-  @NotNull
+  @NotNull (message = "not null")
   private int userId;
 
-  @NotEmpty
+  @NotEmpty (message = "not empty")
+  @Size(min = 5, message = "At least 5 long")
+
   private String textContent;
   @Size(min = 1, message = "At least one image is required")
   private List<MultipartFile> images;

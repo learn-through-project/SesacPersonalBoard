@@ -56,7 +56,7 @@ public class PostControllerImpl implements PostController {
           @RequestParam("post") PostCreateDto dto,
           @RequestParam("images") List<MultipartFile> images) throws SQLException, IOException {
 
-    boolean result = postService.createPost(dto, images);
+    boolean result = postService.createPost(dto);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
