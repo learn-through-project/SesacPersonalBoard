@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface PostService {
   List<Post> getPostList(PostListDto dto) throws SQLException;
   Optional<Post> getPostDetail(int postId) throws SQLException;
-  boolean createPost(PostCreateDto dto, List<MultipartFile> files) throws SQLException, IOException;
+  boolean createPost(PostCreateDto dto) throws SQLException, IOException;
   boolean editPost(PostUpdateDto dto) throws SQLException;
   boolean deletePermanently(int postId) throws SQLException;
   int getPostListTotalCount() throws SQLException;

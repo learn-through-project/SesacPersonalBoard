@@ -49,13 +49,14 @@ public class PostControllerImpl implements PostController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
+  // TODO - @Valid @RequestParam("post") PostCreateDto dto 변경 필요
   @Override
   @PostMapping(EndPoint.POST)
   public ResponseEntity<Boolean> createPost(
           @RequestParam("post") PostCreateDto dto,
           @RequestParam("images") List<MultipartFile> images) throws SQLException, IOException {
 
-    boolean result = postService.createPost(dto, images);
+    boolean result = postService.createPost(dto);
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
 

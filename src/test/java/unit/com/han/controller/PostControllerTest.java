@@ -152,7 +152,7 @@ public class PostControllerTest {
 
     boolean success = true;
     boolean fail = false;
-    private PostCreateDto dto = new PostCreateDto(1, "this is sample");
+    private PostCreateDto dto = new PostCreateDto();
 
     private List<MultipartFile> dummyFiles;
 
@@ -164,30 +164,30 @@ public class PostControllerTest {
 
     @Test
     public void createPost_Throws_SQLException() throws SQLException, IOException {
-      when(postService.createPost(dto, dummyFiles)).thenThrow(SQLException.class);
+      when(postService.createPost(dto)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postController.createPost(dto, dummyFiles));
 
-      verify(postService).createPost(dto, dummyFiles);
+      verify(postService).createPost(dto);
     }
 
     @Test
     public void createPost_Return_False() throws SQLException, IOException {
-      when(postService.createPost(dto, dummyFiles)).thenReturn(fail);
+      when(postService.createPost(dto)).thenReturn(fail);
 
       ResponseEntity<Boolean> result = postController.createPost(dto, dummyFiles);
 
-      verify(postService).createPost(dto, dummyFiles);
+      verify(postService).createPost(dto);
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
       assertThat(result.getBody()).isEqualTo(fail);
     }
 
     @Test
     public void createPost_Return_True() throws SQLException, IOException {
-      when(postService.createPost(dto, dummyFiles)).thenReturn(success);
+      when(postService.createPost(dto)).thenReturn(success);
 
       ResponseEntity<Boolean> result = postController.createPost(dto, dummyFiles);
 
-      verify(postService).createPost(dto, dummyFiles);
+      verify(postService).createPost(dto);
       assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
       assertThat(result.getBody()).isEqualTo(success);
     }

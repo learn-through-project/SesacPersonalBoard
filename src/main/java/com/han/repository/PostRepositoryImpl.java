@@ -103,7 +103,7 @@ public class PostRepositoryImpl implements PostRepository {
 
           try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
             if (generatedKeys.next()) {
-              createdPostId = generatedKeys.getInt(TableColumnsPost.USER_ID.getName());
+              createdPostId = generatedKeys.getInt(1);
             }
           }
       }

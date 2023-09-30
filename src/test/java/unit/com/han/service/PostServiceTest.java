@@ -148,7 +148,7 @@ public class PostServiceTest {
     private MultipartFile dummyFile;
 
     private int postId = 1;
-    private PostCreateDto dummyDto = new PostCreateDto(1, "this is sample");
+    private PostCreateDto dummyDto = new PostCreateDto();
     private Post dummyPost = new Post(1, "this is sample");
     private List<MultipartFile> dummyFiles;
 
@@ -162,7 +162,7 @@ public class PostServiceTest {
     @Test
     public void createPost_Throw_Exception() throws SQLException {
       when(postRepository.insert(dummyPost)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postService.createPost(dummyDto, dummyFiles));
+      assertThrows(SQLException.class, () -> postService.createPost(dummyDto));
 
       verify(postRepository).insert(dummyPost);
     }
@@ -172,7 +172,7 @@ public class PostServiceTest {
       Integer nullPostId = null;
       when(postRepository.insert(dummyPost)).thenReturn(null);
       assertThrows(NullPointerException.class, () -> postImageService.createPostImage(nullPostId, dummyFiles));
-      assertThrows(NullPointerException.class, () -> postService.createPost(dummyDto, dummyFiles));
+      assertThrows(NullPointerException.class, () -> postService.createPost(dummyDto));
 
       verify(postRepository).insert(dummyPost);
     }
@@ -182,7 +182,7 @@ public class PostServiceTest {
       when(postRepository.insert(dummyPost)).thenReturn(postId);
       when(postImageService.createPostImage(postId, dummyFiles)).thenReturn(true);
 
-      boolean isSuccess = postService.createPost(dummyDto, dummyFiles);
+      boolean isSuccess = postService.createPost(dummyDto);
 
 
       verify(postRepository).insert(dummyPost);
