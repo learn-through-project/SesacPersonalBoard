@@ -21,7 +21,7 @@ public class PostRepositoryImpl implements PostRepository {
   private final DataSource dataSource;
 
   @Autowired
-  public PostRepositoryImpl (DataSource dataSource) {
+  public PostRepositoryImpl(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -43,9 +43,10 @@ public class PostRepositoryImpl implements PostRepository {
 
     return count;
   }
+
   @Override
   public boolean deletePermanently(int postId) throws SQLException {
-    String deleteQuery = "DELETE FROM "+ TableColumnsPost.TABLE.getName() +" WHERE "
+    String deleteQuery = "DELETE FROM " + TableColumnsPost.TABLE.getName() + " WHERE "
             + TableColumnsPost.ID + " = ?";
 
     int result = 0;
@@ -53,7 +54,7 @@ public class PostRepositoryImpl implements PostRepository {
     try (Connection conn = dataSource.getConnection()) {
       try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
         statement.setInt(1, postId);
-        result =  statement.executeUpdate();
+        result = statement.executeUpdate();
       }
     }
 
@@ -66,7 +67,7 @@ public class PostRepositoryImpl implements PostRepository {
     String updateQuery = "UPDATE posts SET "
             + TableColumnsPost.USER_ID + " = ? , "
             + TableColumnsPost.TEXT_CONTENT + " = ? "
-            + " WHERE "+ TableColumnsPost.ID + " = ?";
+            + " WHERE " + TableColumnsPost.ID + " = ?";
 
     int result = 0;
 
@@ -96,19 +97,26 @@ public class PostRepositoryImpl implements PostRepository {
     Integer createdPostId = null;
 
     try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
       try (PreparedStatement statement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
-          statement.setInt(1, post.getUserId());
-          statement.setString(2, post.getTitle());
-          statement.setString(3, post.getTextContent());
+        statement.setInt(1, post.getUserId());
+        statement.setString(2, post.getTitle());
+        statement.setString(3, post.getTextContent());
 
-          statement.executeUpdate();
+        statement.executeUpdate();
 
-          try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-            if (generatedKeys.next()) {
-              createdPostId = generatedKeys.getInt(1);
-            }
+        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+          if (generatedKeys.next()) {
+            createdPostId = generatedKeys.getInt(1);
           }
+        }
+
+        conn.commit();
+      } catch (Exception ex) {
+        conn.rollback();
+        throw ex;
       }
+
     }
 
     return createdPostId;
@@ -160,9 +168,9 @@ public class PostRepositoryImpl implements PostRepository {
       try (PreparedStatement statement = conn.prepareStatement(query)) {
         statement.setInt(1, postId);
         try (ResultSet rs = statement.executeQuery()) {
-            while (rs.next()) {
-              post = resultSetToPost(rs);
-            }
+          while (rs.next()) {
+            post = resultSetToPost(rs);
+          }
         }
       }
     }
