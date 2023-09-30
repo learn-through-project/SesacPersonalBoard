@@ -2,6 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Create New Post</title>
+    <script th:inline="javascript" defer>
+        const _isRedirected = /*[[${isRedirected}]]*/ false;
+        const _isSuccess = /*[[${isSuccess}]]*/ false;
+
+
+    </script>
+    <script defer>
+        const showResult = (isSuccess) => {
+            if (isSuccess == null) return;
+
+            const msg = isSuccess ? "등록에 성공하였습니다." : "등록에 실패하였습니다.";
+            alert(msg);
+        }
+
+        showResult(_isSuccess);
+        if (_isSuccess) window.location.href="/posts";
+
+    </script>
 </head>
 <body>
 <h1>New Post</h1>

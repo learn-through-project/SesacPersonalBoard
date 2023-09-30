@@ -1,5 +1,6 @@
 package unit.com.han.controller;
 
+import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.controller.PostViewControllerImpl;
 import com.han.dto.PostCreateDto;
@@ -41,9 +42,6 @@ public class PostViewControllerTest {
   @Mock
   private Model model;
 
-  @Mock
-  private MultipartFile dummyFile;
-
   @InjectMocks
   private PostViewControllerImpl postViewController;
 
@@ -61,42 +59,42 @@ public class PostViewControllerTest {
   class CreatePost_Test {
 
     private PostCreateDto dto = new PostCreateDto();
-    private List<MultipartFile> dummyFiles;
-
-    @BeforeEach
-    public void setUp() {
-      dummyFiles = List.of(dummyFile, dummyFile);
-    }
 
     @Test
     public void createPost_Throws_Exception_When_Service_Throws() throws SQLException, IOException {
-      when(postService.createPost(dto, dummyFiles)).thenThrow(SQLException.class);
+      when(postService.createPost(dto)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postViewController.createPost(dto, bindingResult, redirectAttributes));
     }
 
     @Test
-    public void createPost_Return_FromView_When_Input_Invalid() throws SQLException, IOException {
+    public void createPost_Return_Form_EndPoint_When_Input_Invalid() throws SQLException, IOException {
       when(bindingResult.hasErrors()).thenReturn(true);
-      String viewName = postViewController.createPost(dto, bindingResult, redirectAttributes);
+      String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
-      assertThat(viewName).isEqualTo(ViewName.POST_NEW_VIEW);
+      verify(redirectAttributes).addFlashAttribute("post", dto);
+      verify(redirectAttributes).addFlashAttribute("isRedirected", 1);
+      assertThat(endPoint).isEqualTo("redirect:" + EndPoint.POST_NEW);
     }
 
     @Test
-    public void createPost_Return_ResultView_With_IsSuccess_False() throws SQLException, IOException {
-      when(postService.createPost(dto, dummyFiles)).thenReturn(false);
-      String viewName = postViewController.createPost(dto, bindingResult, redirectAttributes);
+    public void createPost_Return_FormEndPoint_With_IsSuccess_0() throws SQLException, IOException {
+      when(postService.createPost(dto)).thenReturn(false);
+      String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
-      verify(model).addAttribute("isSuccess", false);
-      assertThat(viewName).isEqualTo(ViewName.POST_NEW_RESULT);
+      verify(redirectAttributes).addFlashAttribute("post", dto);
+      verify(redirectAttributes).addFlashAttribute("isRedirected", 1);
+      verify(redirectAttributes).addFlashAttribute("isSuccess", 0);
+      assertThat(endPoint).isEqualTo("redirect:" + EndPoint.POST_NEW);
     }
     @Test
-    public void createPost_Return_ResultView_With_IsSuccess_True() throws SQLException, IOException {
-      when(postService.createPost(dto, dummyFiles)).thenReturn(true);
-      String viewName = postViewController.createPost(dto, bindingResult, redirectAttributes);
+    public void createPost_Return_FormEndPoint_With_IsSuccess_1() throws SQLException, IOException {
+      when(postService.createPost(dto)).thenReturn(true);
+      String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
-      verify(model).addAttribute("isSuccess", true);
-      assertThat(viewName).isEqualTo(ViewName.POST_NEW_RESULT);
+      verify(redirectAttributes).addFlashAttribute("post", dto);
+      verify(redirectAttributes).addFlashAttribute("isRedirected", 1);
+      verify(redirectAttributes).addFlashAttribute("isSuccess", 1);
+      assertThat(endPoint).isEqualTo("redirect:" + EndPoint.POST_NEW);
     }
   }
 

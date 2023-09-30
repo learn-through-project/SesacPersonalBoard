@@ -47,6 +47,10 @@ public class PostViewControllerImpl implements PostViewController {
           RedirectAttributes redirectAttributes
   ) throws SQLException, IOException {
 
+    if (!br.hasErrors()) {
+      boolean isSuccess = postService.createPost(dto);
+      redirectAttributes.addFlashAttribute("isSuccess", isSuccess ? 1 : 0);
+    }
 
     redirectAttributes.addFlashAttribute("post", dto);
     redirectAttributes.addFlashAttribute("isRedirected", 1);
