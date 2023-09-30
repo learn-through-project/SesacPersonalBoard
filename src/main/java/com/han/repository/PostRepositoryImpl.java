@@ -170,14 +170,16 @@ public class PostRepositoryImpl implements PostRepository {
 
   private Post resultSetToPost(ResultSet rs) throws SQLException {
     Integer id = rs.getInt(TableColumnsPost.ID.getName());
-    Integer authorId = rs.getInt(TableColumnsPost.USER_ID.getName());
+    Integer userId = rs.getInt(TableColumnsPost.USER_ID.getName());
+    String title = rs.getString(TableColumnsPost.TITLE.getName());
     String textContent = rs.getString(TableColumnsPost.TEXT_CONTENT.getName());
     Timestamp createdAt = rs.getTimestamp(TableColumnsPost.CREATED_AT.getName());
     Timestamp updatedAt = rs.getTimestamp(TableColumnsPost.UPDATED_AT.getName());
 
     Post post = new Post();
     post.setId(id);
-    post.setUserId(authorId);
+    post.setUserId(userId);
+    post.setTitle(title);
     post.setTextContent(textContent);
     post.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
     post.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);

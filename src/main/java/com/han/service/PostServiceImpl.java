@@ -91,13 +91,13 @@ public class PostServiceImpl implements PostService {
   }
 
   private Post fromCreateDtoToPost(PostCreateDto dto) {
-    Post post = new Post(dto.getUserId(), dto.getTextContent());
+    Post post = new Post(dto.getUserId(), dto.getTitle(), dto.getTextContent());
 
     return post;
   }
 
   private Post fromUpdateDtoToPost(PostUpdateDto dto) {
-    Post post = new Post(dto.getId(), dto.getAuthor(), dto.getTextContent());
+    Post post = new Post(dto.getId(), dto.getUserId(), dto.getTitle(), dto.getTextContent());
     return post;
   }
 

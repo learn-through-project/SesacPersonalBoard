@@ -110,7 +110,7 @@ public class PostServiceTest {
 
     boolean fail = false;
     private PostUpdateDto dummyDto = new PostUpdateDto(1, 1, "this is update");
-    private Post dummyPost = new Post(dummyDto.getId(), dummyDto.getAuthor(), dummyDto.getTextContent());
+    private Post dummyPost = new Post(dummyDto.getId(), dummyDto.getUserId(), dummyDto.getTextContent());
 
     @Test
     public void editPost_Throw_Exception() throws SQLException {
