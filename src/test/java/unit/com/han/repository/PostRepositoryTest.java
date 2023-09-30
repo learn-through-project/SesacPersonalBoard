@@ -123,7 +123,7 @@ public class PostRepositoryTest {
   class Update_Test {
     int success = 1;
     int fail = 0;
-    private Post dummyPost = new Post( 1,1, "this is sample00");
+    private Post dummyPost = new Post( 1,1,"title", "this is sample00");
 
     @Test
     public void update_Throws_Exception() throws SQLException {
@@ -169,7 +169,7 @@ public class PostRepositoryTest {
 
     int success = 1;
     int fail = 0;
-    private Post dummyPost = new Post( 1, "this is sample");
+    private Post dummyPost = new Post( 1, "title1", "this is sample");
 
     @Test
     public void insert_Throw_SQLException() throws SQLException {
@@ -180,7 +180,8 @@ public class PostRepositoryTest {
       assertThrows(SQLException.class, () -> postRepository.insert(dummyPost));
 
       verify(statement).setInt(1, dummyPost.getUserId());
-      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).setString(2, dummyPost.getTitle());
+      verify(statement).setString(3, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
     }
@@ -195,7 +196,8 @@ public class PostRepositoryTest {
       Integer result = postRepository.insert(dummyPost);
 
       verify(statement).setInt(1, dummyPost.getUserId());
-      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).setString(2, dummyPost.getTitle());
+      verify(statement).setString(3, dummyPost.getTextContent());
       verify(statement).executeUpdate();
 
       assertThat(result).isNull();
@@ -209,16 +211,17 @@ public class PostRepositoryTest {
       when(statement.executeUpdate()).thenReturn(success);
       when(statement.getGeneratedKeys()).thenReturn(resultSet);
       when(resultSet.next()).thenReturn(true);
-      when(resultSet.getInt(TableColumnsPost.USER_ID.getName())).thenReturn(insertedId);
+      when(resultSet.getInt(1)).thenReturn(insertedId);
 
       Integer postId = postRepository.insert(dummyPost);
 
       verify(statement).setInt(1, dummyPost.getUserId());
-      verify(statement).setString(2, dummyPost.getTextContent());
+      verify(statement).setString(2, dummyPost.getTitle());
+      verify(statement).setString(3, dummyPost.getTextContent());
       verify(statement).executeUpdate();
       verify(statement).getGeneratedKeys();
       verify(resultSet).next();
-      verify(resultSet).getInt(TableColumnsPost.USER_ID.getName());
+      verify(resultSet).getInt(1);
       assertThat(postId).isEqualTo(insertedId);
     }
 

@@ -89,15 +89,17 @@ public class PostRepositoryImpl implements PostRepository {
   public Integer insert(Post post) throws SQLException {
     String insertQuery = "INSERT INTO " + TableColumnsPost.TABLE.getName() + " ("
             + TableColumnsPost.USER_ID.getName() + ","
+            + TableColumnsPost.TITLE.getName() + ","
             + TableColumnsPost.TEXT_CONTENT.getName() + ")"
-            + " VALUES (?, ?)";
+            + " VALUES (?, ?, ?)";
 
     Integer createdPostId = null;
 
     try (Connection conn = dataSource.getConnection()) {
       try (PreparedStatement statement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
           statement.setInt(1, post.getUserId());
-          statement.setString(2, post.getTextContent());
+          statement.setString(2, post.getTitle());
+          statement.setString(3, post.getTextContent());
 
           statement.executeUpdate();
 

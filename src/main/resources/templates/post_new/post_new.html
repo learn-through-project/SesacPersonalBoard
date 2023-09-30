@@ -27,6 +27,13 @@
     <input type="hidden" name="userId" th:value="1"/>
 
     <div>
+        <label for="title">게시글 제목</label>
+        <input type="text" id="title" name="title" th:value="*{title}"/>
+        <span th:if="${isRedirected == 1 and #fields.hasErrors('title')}" th:errors="*{title}"></span>
+    </div>
+
+
+    <div>
         <label for="textContent">게시글 내용</label>
         <input type="text" id="textContent" name="textContent" th:value="*{textContent}"/>
         <span th:if="${isRedirected == 1 and #fields.hasErrors('textContent')}" th:errors="*{textContent}"></span>
