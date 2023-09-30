@@ -30,7 +30,9 @@ public class PostImageServiceImpl implements PostImageService {
   public boolean createPostImage(int postId, List<MultipartFile> files) throws IOException, SQLException {
     List<Boolean> results = new LinkedList<>();
 
-    List<String> urls = imageUploadService.uploadImages(files);
+    // TODO - change
+    String pathPrefix = "post/1";
+    List<String> urls = imageUploadService.uploadImages(files, pathPrefix);
 
     for (int i = 0; i < urls.size(); i++) {
       boolean result = postImageRepository.insert(new PostImage(postId, urls.get(i), i + 1));

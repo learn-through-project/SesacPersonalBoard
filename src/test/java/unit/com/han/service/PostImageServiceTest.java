@@ -58,14 +58,16 @@ public class PostImageServiceTest {
     @Test
     public void createPostImage_Return_True_When_Success_All() throws IOException, SQLException {
 
-      when(imageUploadService.uploadImages(dummyFiles)).thenReturn(dummyUrls);
+      // TODO - change
+      when(imageUploadService.uploadImages(dummyFiles, "post/1")).thenReturn(dummyUrls);
       for (int i = 0; i < dummyUrls.size(); i++) {
         when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(true);
       }
 
       boolean result = postImageService.createPostImage(postId, dummyFiles);
 
-      verify(imageUploadService).uploadImages(dummyFiles);
+      // TODO - change
+      verify(imageUploadService).uploadImages(dummyFiles, "post/1");
       verify(postImageRepository).insert(dummyPostImage.get(0));
       verify(postImageRepository).insert(dummyPostImage.get(1));
       verify(postImageRepository).insert(dummyPostImage.get(2));
