@@ -73,21 +73,4 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
     return urls;
   }
-
-  @Override
-  public List<String> uploadImagesWithRollback(List<MultipartFile> files, String pathPrefix) throws Exception {
-    List<String> urls = null;
-
-    try {
-      urls = uploadImages(files, pathPrefix);
-    } catch (Exception ex) {
-      for (int i = 0; i < files.size(); i++) {
-        deleteImage(pathPrefix + "/" + i);
-      }
-      log.error("Error in uploadImages: >>" + ex.getMessage());
-      throw new Exception("이미지 업로드에 실패하였습니다.");
-    }
-
-    return urls;
-  }
 }

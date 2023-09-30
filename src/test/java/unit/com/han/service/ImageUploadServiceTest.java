@@ -35,57 +35,6 @@ public class ImageUploadServiceTest {
   private ImageUploadServiceImpl imageUploadService;
 
   @Nested
-  class UploadImagesWithRollback_Test {
-    private List<MultipartFile> dummyFiles;
-
-    private String pathPrefix = "post/1";
-
-    @BeforeEach
-    public void setUp() {
-      this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
-    }
-
-    @Test
-    public void uploadImagesWithRollback_Throws_Exception() throws Exception {
-      when(storage.create(pathPrefix + "/" +  0, dummyFile.getBytes(), dummyFile.getContentType())).thenReturn(blob);
-      when(blob.getName()).thenReturn("mockedBlobName" + 0);
-      when(storage.create(pathPrefix + "/" +  1, dummyFile.getBytes(), dummyFile.getContentType())).thenThrow(RuntimeException.class);
-
-
-      when(storage.get(pathPrefix + "/" + 0)).thenReturn(blob);
-      when(blob.delete()).thenReturn(true);
-      when(storage.get(pathPrefix + "/" + 1)).thenThrow(StorageException.class);
-      when(storage.get(pathPrefix + "/" + 2)).thenThrow(StorageException.class);
-
-      Exception exception = assertThrows(Exception.class, () -> imageUploadService.uploadImagesWithRollback(dummyFiles, pathPrefix));
-
-      verify(storage, times(1)).create(pathPrefix + "/" +  0, dummyFile.getBytes(), dummyFile.getContentType());
-      verify(storage, times(1) ).create(pathPrefix + "/" +  1, dummyFile.getBytes(), dummyFile.getContentType());
-      verify(storage, times(1)).get(pathPrefix + "/" + 0);
-      verify(blob, times(1)).delete();
-
-      assertThat(exception.getMessage()).isEqualTo("이미지 업로드에 실패하였습니다.");
-    }
-
-    @Test
-    public void uploadImagesWithRollback_Return_Urls() throws Exception {
-
-      for (int i = 0; i < dummyFiles.size(); i++) {
-        when(storage.create(pathPrefix + "/" +  i, dummyFile.getBytes(), dummyFile.getContentType())).thenReturn(blob);
-        when(blob.getName()).thenReturn("mockedBlobName" + i);
-      }
-
-      List<String> urls = imageUploadService.uploadImagesWithRollback(dummyFiles, pathPrefix);
-
-      for (int i = 0; i < dummyFiles.size(); i++) {
-        verify(storage).create(pathPrefix + "/" +  i, dummyFile.getBytes(), dummyFile.getContentType());
-      }
-
-      assertThat(urls.size()).isEqualTo(dummyFiles.size());
-    }
-  }
-
-  @Nested
   class UploadImages_Test {
 
     private List<MultipartFile> dummyFiles;
