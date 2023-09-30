@@ -16,7 +16,7 @@ public interface PostViewController {
 
   String createPost(
           @Valid @ModelAttribute("post") PostCreateDto dto, BindingResult br, RedirectAttributes redirectAttributes
-  ) throws SQLException, IOException;
+  );
 
   String getPostList(@Valid PostListDto dto, BindingResult br, Model model) throws SQLException;
 }

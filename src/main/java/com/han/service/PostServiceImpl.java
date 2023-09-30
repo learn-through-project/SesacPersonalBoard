@@ -54,14 +54,23 @@ public class PostServiceImpl implements PostService {
     return result;
   }
 
-
-  @Transactional(rollbackFor = {SQLException.class, IOException.class})
   @Override
-  public boolean createPost(PostCreateDto dto) throws SQLException, IOException {
-    Post post = fromCreateDtoToPost(dto);
+  public boolean createPost(PostCreateDto dto) throws Exception {
+    boolean isSuccess = false;
 
+    Post post = fromCreateDtoToPost(dto);
     Integer postId = postRepository.insert(post);
-    boolean isSuccess = postImageService.createPostImage(postId, dto.getImages());
+
+    if (postId != null) {
+      try {
+        //Q: createPostImage는 성공이면 true, 실패면 throw인데 boolean반환하는게 의미가 있는지, 차라리 void가 나은지,
+        isSuccess = postImageService.createPostImage(postId, dto.getImages());
+      } catch (Exception ex) {
+        postRepository.deletePermanently(postId);
+        throw ex;
+      }
+    }
+
 
     return isSuccess;
   }

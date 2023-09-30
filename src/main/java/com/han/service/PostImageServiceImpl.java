@@ -5,6 +5,7 @@ import com.han.repository.PostImageRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,17 +27,30 @@ public class PostImageServiceImpl implements PostImageService {
     this.imageUploadService = imageUploadService;
   }
 
+
+  @Transactional
   @Override
-  public boolean createPostImage(int postId, List<MultipartFile> files) throws IOException, SQLException {
+  public boolean createPostImage(Integer postId, List<MultipartFile> files) throws Exception {
     List<Boolean> results = new LinkedList<>();
+    String pathPrefix = "post/" + postId;
 
-    List<String> urls = imageUploadService.uploadImages(files);
+    try {
+      List<String> urls = imageUploadService.uploadImages(files, pathPrefix);
 
-    for (int i = 0; i < urls.size(); i++) {
-      boolean result = postImageRepository.insert(new PostImage(postId, urls.get(i), i + 1));
-      results.add(result);
+      for (int i = 0; i < urls.size(); i++) {
+        results.add(postImageRepository.insert(new PostImage(postId, urls.get(i), i + 1)));
+      }
+
+      for (boolean isSuccess : results) {
+        if (!isSuccess) throw new Exception("이미지 삽입에 실패하였습니다.");
+      }
+
+    } catch (Exception ex) {
+      log.error("error in createPostImage: >>" + ex.getMessage());
+      imageUploadService.deleteImages(files, pathPrefix);
+      throw new Exception("이미지 삽입에 실패하였습니다.");
     }
 
-    return results.size() == urls.size();
+    return true;
   }
 }

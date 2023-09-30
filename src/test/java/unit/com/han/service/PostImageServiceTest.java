@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,25 +48,55 @@ public class PostImageServiceTest {
   @Nested
   class CreatePostImage_Test {
 
-    private List<String>  dummyUrls = List.of("1","2","3");
+    private String pathPrefix = "post/1";
+    private List<String> dummyUrls = List.of("1", "2", "3");
     private List<PostImage> dummyPostImage = List.of(
             new PostImage(postId, dummyUrls.get(0), 0 + 1),
             new PostImage(postId, dummyUrls.get(1), 1 + 1),
             new PostImage(postId, dummyUrls.get(2), 2 + 1)
     );
 
+    @Test
+    public void createPostImage_Throws_Exception_When_Insert_Image_Fail() throws Exception {
+      when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenReturn(dummyUrls);
+
+      for (int i = 0; i < dummyUrls.size(); i++) {
+        when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(i < 1);
+      }
+
+      Exception ex = assertThrows(Exception.class, () -> postImageService.createPostImage(postId, dummyFiles));
+
+      verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
+      verify(postImageRepository).insert(dummyPostImage.get(0));
+      verify(postImageRepository).insert(dummyPostImage.get(1));
+      verify(postImageRepository).insert(dummyPostImage.get(2));
+      verify(imageUploadService).deleteImages(dummyFiles, pathPrefix);
+      assertThat(ex.getMessage()).isEqualTo("이미지 삽입에 실패하였습니다.");
+    }
 
     @Test
-    public void createPostImage_Return_True_When_Success_All() throws IOException, SQLException {
+    public void createPostImage_Throws_Exception_When_Upload_Image_Fail() throws Exception {
+      when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenThrow(IOException.class);
 
-      when(imageUploadService.uploadImages(dummyFiles)).thenReturn(dummyUrls);
+      Exception ex = assertThrows(Exception.class, () -> postImageService.createPostImage(postId, dummyFiles));
+
+      verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
+      verify(imageUploadService).deleteImages(dummyFiles, pathPrefix);
+      assertThat(ex.getMessage()).isEqualTo("이미지 삽입에 실패하였습니다.");
+    }
+
+    @Test
+    public void createPostImage_Return_True_When_Success_All() throws Exception {
+
+      when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenReturn(dummyUrls);
+
       for (int i = 0; i < dummyUrls.size(); i++) {
         when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(true);
       }
 
       boolean result = postImageService.createPostImage(postId, dummyFiles);
 
-      verify(imageUploadService).uploadImages(dummyFiles);
+      verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
       verify(postImageRepository).insert(dummyPostImage.get(0));
       verify(postImageRepository).insert(dummyPostImage.get(1));
       verify(postImageRepository).insert(dummyPostImage.get(2));

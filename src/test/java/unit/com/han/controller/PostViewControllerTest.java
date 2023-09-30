@@ -25,6 +25,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,15 +61,18 @@ public class PostViewControllerTest {
   class CreatePost_Test {
 
     private PostCreateDto dto = new PostCreateDto();
-
     @Test
-    public void createPost_Throws_Exception_When_Service_Throws() throws SQLException, IOException {
-      when(postService.createPost(dto)).thenThrow(SQLException.class);
-      assertThrows(SQLException.class, () -> postViewController.createPost(dto, bindingResult, redirectAttributes));
+    public void createPost_Return_Form_EndPoint_When_Service_Throws() throws Exception {
+      when(postService.createPost(dto)).thenThrow(Exception.class);
+      String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
+
+      verify(redirectAttributes).addFlashAttribute("isSuccess", 0);
+      verify(redirectAttributes).addFlashAttribute("post", dto);
+      verify(redirectAttributes).addFlashAttribute("isRedirected", 1);
+      assertThat(endPoint).isEqualTo("redirect:" + EndPoint.POST_NEW);
     }
-
     @Test
-    public void createPost_Return_Form_EndPoint_When_Input_Invalid() throws SQLException, IOException {
+    public void createPost_Return_Form_EndPoint_When_Input_Invalid() throws Exception {
       when(bindingResult.hasErrors()).thenReturn(true);
       String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
@@ -77,7 +82,7 @@ public class PostViewControllerTest {
     }
 
     @Test
-    public void createPost_Return_FormEndPoint_With_IsSuccess_0() throws SQLException, IOException {
+    public void createPost_Return_FormEndPoint_With_IsSuccess_0() throws Exception {
       when(postService.createPost(dto)).thenReturn(false);
       String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
 
@@ -86,8 +91,9 @@ public class PostViewControllerTest {
       verify(redirectAttributes).addFlashAttribute("isSuccess", 0);
       assertThat(endPoint).isEqualTo("redirect:" + EndPoint.POST_NEW);
     }
+
     @Test
-    public void createPost_Return_FormEndPoint_With_IsSuccess_1() throws SQLException, IOException {
+    public void createPost_Return_FormEndPoint_With_IsSuccess_1() throws Exception {
       when(postService.createPost(dto)).thenReturn(true);
       String endPoint = postViewController.createPost(dto, bindingResult, redirectAttributes);
 

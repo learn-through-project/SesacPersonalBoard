@@ -7,5 +7,5 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface PostImageService {
-  boolean createPostImage(int postId, List<MultipartFile> files) throws IOException, SQLException;
+  boolean createPostImage(Integer postId, List<MultipartFile> files) throws Exception;
 }

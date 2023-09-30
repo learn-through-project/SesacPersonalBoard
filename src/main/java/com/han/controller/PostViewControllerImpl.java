@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -45,11 +44,17 @@ public class PostViewControllerImpl implements PostViewController {
           @Valid @ModelAttribute("post") PostCreateDto dto,
           BindingResult br,
           RedirectAttributes redirectAttributes
-  ) throws SQLException, IOException {
+  ) {
 
     if (!br.hasErrors()) {
-      boolean isSuccess = postService.createPost(dto);
-      redirectAttributes.addFlashAttribute("isSuccess", isSuccess ? 1 : 0);
+      try {
+        boolean isSuccess = postService.createPost(dto);
+        redirectAttributes.addFlashAttribute("isSuccess", isSuccess ? 1 : 0);
+      } catch (Exception ex) {
+        redirectAttributes.addFlashAttribute("isSuccess", 0);
+        redirectAttributes.addFlashAttribute("msg", ex.getMessage());
+      }
+
     }
 
     redirectAttributes.addFlashAttribute("post", dto);

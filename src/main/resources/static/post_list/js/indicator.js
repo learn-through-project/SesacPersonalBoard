@@ -16,6 +16,7 @@ const getFivePages = (lastPage) => {
     if (page > 0) pages.push(page);
   }
 
+  if (pages.length == 0) pages.push(1);
   return pages;
 };
 

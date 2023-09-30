@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Log4j2
 @Service
@@ -41,23 +42,39 @@ public class ImageUploadServiceImpl implements ImageUploadService {
   }
 
   @Override
-  public String uploadImage(MultipartFile file) throws IOException {
-    String fileName = file.getName();
-    Blob blob = storage.create(fileName, file.getBytes(), file.getContentType());
+  public boolean deleteImage(String blobName) {
+    boolean isSuccess = false;
+
+    try {
+      Blob blob = storage.get(blobName);
+      isSuccess = blob.delete();
+    } catch (StorageException ex) {
+      log.error(blobName + "파일 삭제에 실패하였습니다.");
+    }
+
+    return isSuccess;
+  }
+
+  @Override
+  public void deleteImages(List<MultipartFile> files, String pathPrefix) throws IOException {
+    for (int i = 0; i < files.size(); i++) {
+      deleteImage(pathPrefix + "/" + i);
+    }
+  }
+
+  @Override
+  public String uploadImage(MultipartFile file, String pathname) throws IOException {
+    Blob blob = storage.create(pathname, file.getBytes(), file.getContentType());
     String url = getUrl(blob.getName());
     return url;
   }
 
   @Override
-  public List<String> uploadImages(List<MultipartFile> files) throws IOException {
+  public List<String> uploadImages(List<MultipartFile> files, String pathPrefix) throws IOException {
     List<String> urls = new LinkedList<>();
 
     for (int i = 0; i < files.size(); i++) {
-      try {
-        urls.add(uploadImage(files.get(i)));
-      } catch (StorageException ex) {
-        log.error("Error in " + i + "th file upload: >> " + ex.getMessage());
-      }
+      urls.add(uploadImage(files.get(i), pathPrefix + "/" +  i));
     }
 
     return urls;

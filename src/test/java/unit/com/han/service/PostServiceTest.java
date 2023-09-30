@@ -39,6 +39,9 @@ public class PostServiceTest {
   @Mock
   private PostRepository postRepository;
 
+  @Mock
+  private MultipartFile dummyFile;
+
   @InjectMocks
   private PostServiceImpl postService;
 
@@ -109,8 +112,8 @@ public class PostServiceTest {
     boolean success = true;
 
     boolean fail = false;
-    private PostUpdateDto dummyDto = new PostUpdateDto(1, 1, "this is update");
-    private Post dummyPost = new Post(dummyDto.getId(), dummyDto.getUserId(), dummyDto.getTextContent());
+    private PostUpdateDto dummyDto = new PostUpdateDto(1,1,  "this is update");
+    private Post dummyPost = new Post(dummyDto.getId(), dummyDto.getUserId(), dummyDto.getTitle(), dummyDto.getTextContent());
 
     @Test
     public void editPost_Throw_Exception() throws SQLException {
@@ -144,23 +147,33 @@ public class PostServiceTest {
 
   @Nested
   class CreatePost_Test {
-    @Mock
-    private MultipartFile dummyFile;
-
     private int postId = 1;
-    private PostCreateDto dummyDto = new PostCreateDto();
-    private Post dummyPost = new Post(1, "this is sample");
-    private List<MultipartFile> dummyFiles;
+    private Integer userId = 1;
+    private String title = "dummy title";
+    private String content = "dummy content";
+    List<MultipartFile> images;
+    private PostCreateDto dummyDto;
+    private Post dummyPost;
 
-    private String testUrl = "url";
 
     @BeforeEach
     public void setUp() {
-      this.dummyFiles = List.of(dummyFile, dummyFile);
+      List<MultipartFile> dummyImages = List.of(dummyFile, dummyFile);
+      this.images = dummyImages;
+      this.dummyDto = new PostCreateDto(userId, title, content, dummyImages);
+      this.dummyPost = new Post(userId, title, content);
     }
 
     @Test
-    public void createPost_Throw_Exception() throws SQLException {
+    public void createPost_Throw_Exception_When_Create_Image_Throw() throws Exception {
+      when(postRepository.insert(dummyPost)).thenReturn(postId);
+      when(postImageService.createPostImage(postId, dummyDto.getImages())).thenThrow(Exception.class);
+      assertThrows(Exception.class, () -> postService.createPost(dummyDto));
+
+      verify(postRepository).insert(dummyPost);
+    }
+    @Test
+    public void createPost_Throw_Exception_When_Insert_Throw() throws SQLException {
       when(postRepository.insert(dummyPost)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postService.createPost(dummyDto));
 
@@ -168,25 +181,14 @@ public class PostServiceTest {
     }
 
     @Test
-    public void createPost_Throws_NullPointException_When_Insert_Fail() throws SQLException, IOException {
-      Integer nullPostId = null;
-      when(postRepository.insert(dummyPost)).thenReturn(null);
-      assertThrows(NullPointerException.class, () -> postImageService.createPostImage(nullPostId, dummyFiles));
-      assertThrows(NullPointerException.class, () -> postService.createPost(dummyDto));
-
-      verify(postRepository).insert(dummyPost);
-    }
-
-    @Test
-    public void createPost_Return_True() throws SQLException, IOException {
+    public void createPost_Return_True() throws Exception {
       when(postRepository.insert(dummyPost)).thenReturn(postId);
-      when(postImageService.createPostImage(postId, dummyFiles)).thenReturn(true);
+      when(postImageService.createPostImage(postId, dummyDto.getImages())).thenReturn(true);
 
       boolean isSuccess = postService.createPost(dummyDto);
 
-
       verify(postRepository).insert(dummyPost);
-      verify(postImageService).createPostImage(postId, dummyFiles);
+      verify(postImageService).createPostImage(postId, dummyDto.getImages());
 
       assertThat(isSuccess).isTrue();
     }
