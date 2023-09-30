@@ -27,18 +27,27 @@ public class PostImageServiceImpl implements PostImageService {
   }
 
   @Override
-  public boolean createPostImage(int postId, List<MultipartFile> files) throws IOException, SQLException {
+  public boolean createPostImage(Integer postId, List<MultipartFile> files) throws Exception {
     List<Boolean> results = new LinkedList<>();
+    String pathPrefix = "post/" + postId;
 
-    // TODO - change
-    String pathPrefix = "post/1";
-    List<String> urls = imageUploadService.uploadImages(files, pathPrefix);
+    try {
+      List<String> urls = imageUploadService.uploadImages(files, pathPrefix);
 
-    for (int i = 0; i < urls.size(); i++) {
-      boolean result = postImageRepository.insert(new PostImage(postId, urls.get(i), i + 1));
-      results.add(result);
+      for (int i = 0; i < urls.size(); i++) {
+        results.add(postImageRepository.insert(new PostImage(postId, urls.get(i), i + 1)));
+      }
+
+      for (boolean isSuccess : results) {
+        if (!isSuccess) throw new Exception("이미지 삽입에 실패하였습니다.");
+      }
+
+    } catch (Exception ex) {
+      log.error("error in createPostImage: >>" + ex.getMessage());
+      imageUploadService.deleteImages(files, pathPrefix);
+      throw new Exception("이미지 삽입에 실패하였습니다.");
     }
-
-    return results.size() == urls.size();
+    
+    return true;
   }
 }
