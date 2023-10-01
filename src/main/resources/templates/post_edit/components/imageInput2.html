@@ -1,0 +1,9 @@
+<div lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="imgTag2">
+    <div class="img-field">
+        <label for="file2">이미지 첨부 2</label>
+        <input id="file2" type="file" name="images"/>
+        <input hidden th:if="${post.images[1]?.id}" id="file2_idx" name="imgFlag[1]" type="text" th:value="${post.images[1]?.id}"/>
+        <img id="file2_thumb" th:if="${post.images[1]?.url}" th:src="${post.images[1]?.url}" width="100px"/>
+        <button id="file2_del" type="button">삭제</button>
+    </div>
+</div>

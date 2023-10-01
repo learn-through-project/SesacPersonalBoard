@@ -39,10 +39,8 @@ public class PostViewControllerImpl implements PostViewController {
           BindingResult br,
           RedirectAttributes redirectAttributes
   ) {
-    log.error("dto: >>" + dto);
-    log.error("flags: >>" + dto.getImgFlag());
 
-    return "redirect:" + EndPoint.POST_EDIT;
+    return ViewName.POST_DETAIL;
   }
 
   @GetMapping(EndPoint.POST_EDIT)

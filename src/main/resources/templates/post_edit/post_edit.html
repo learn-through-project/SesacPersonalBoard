@@ -2,31 +2,21 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Create New Post</title>
+    <link rel="stylesheet" th:href="@{/post_edit/css/main.css}"/>
     <script th:inline="javascript" defer>
         const _isRedirected = /*[[${isRedirected}]]*/ false;
         const _isSuccess = /*[[${isSuccess}]]*/ false;
         const _post = /*[[${post}]]*/ null;
-        console.log("awe ", _post);
-    </script>
 
-    <script defer>
-        document.getElementById("#file1").addEventListener("change", () => {
-            console.log('changed');
-        });
     </script>
-    <style>
-        .img-field {
-            display: flex;
-            flex-direction: row;
-        }
-    </style>
-
+    <script th:src="@{/post_edit/js/handleImgTag.js}" type="module"></script>
+    <script th:src="@{/post_edit/js/main.js}" type="module"></script>
 
 </head>
 <body>
 <h1>New Post</h1>
 <form class="form" method="post" action="/post" enctype="multipart/form-data" th:object="${post}">
-    <input type="hidden" name="_method" value="put" />
+    <input type="hidden" name="_method" value="put"/>
     <input type="hidden" name="userId" th:value="1"/>
 
     <div>
@@ -42,24 +32,12 @@
         <span th:if="${isRedirected == 1 and #fields.hasErrors('textContent')}" th:errors="*{textContent}"></span>
     </div>
 
-    <div class="img-field">
-        <label for="file1">이미지 첨부 1</label>
-        <input id="file1" type="file" name="images"/>
-
-        <div th:if="${post.images.get(0) != null}">
-            <input hidden type="text" name="imgFlag[0]" th:value="${post.images.get(0).id}" />
-            <img th:src="${post.images.get(0).url}" width="100px"  />
-        </div>
+    <div>
+        <div th:insert="~{/post_edit/components/imageInput1 :: imgTag1 }"></div>
     </div>
-    <div class="img-field">
-        <label for="file1">이미지 첨부 2</label>
-        <input id="file2" type="file" name="images"/>
 
-        <div th:if="${post.images.get(1) != null}">
-            <input hidden type="text" name="imgFlag[1]" th:value="${post.images.get(1).id}" />
-            <div th:text="${post.images.get(1).id}"></div>
-            <img th:src="${post.images.get(1).url}" width="100px"  />
-        </div>
+    <div>
+        <div th:insert="~{/post_edit/components/imageInput2 :: imgTag2 }"></div>
     </div>
 
     <button type="submit">Submit</button>

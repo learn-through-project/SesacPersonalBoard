@@ -23,7 +23,6 @@ public class PostEditDto {
   private String textContent;
   @Size(min = 1, message = "At least one image is required")
   private List<MultipartFile> images;
-
   private List<Integer> imgFlag;
 
   public PostEditDto(int userId, String title, String textContent, List<MultipartFile> images, List<Integer> imgFlag) {
