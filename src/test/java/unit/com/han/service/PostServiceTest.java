@@ -254,7 +254,7 @@ public class PostServiceTest {
 
     @Test
     public void getPostList_Throw_Exception() throws SQLException {
-      when(postRepository.findAll(orderAsc, sort, limit, offset)).thenThrow(SQLException.class);
+      when(postRepository.findAll(orderDesc, sort, limit, offset)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postService.getPostList(dto));
     }
 
@@ -269,7 +269,6 @@ public class PostServiceTest {
 
       when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
 
-      dto.setOrder(OrderType.DESC.name());
       List<Post> list = postService.getPostList(dto);
 
       verify(postRepository).findAll(orderDesc, sort, limit, offset);
@@ -285,11 +284,11 @@ public class PostServiceTest {
               .mapToObj((i) -> new Post(i))
               .collect(Collectors.toList());
 
-      when(postRepository.findAll(orderAsc, sort, limit, offset)).thenReturn(mockList);
+      when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
 
       List<Post> list = postService.getPostList(dto);
 
-      verify(postRepository).findAll(orderAsc, sort, limit, offset);
+      verify(postRepository).findAll(orderDesc, sort, limit, offset);
       assertThat(list.size()).isEqualTo(mockList.size());
       assertThat(list.get(1).getId()).isGreaterThan(list.get(0).getId());
     }
