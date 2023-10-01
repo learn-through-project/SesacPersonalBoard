@@ -32,6 +32,18 @@ public class PostViewControllerImpl implements PostViewController {
     this.postService = postService;
   }
 
+  @PutMapping(EndPoint.POST)
+  @Override
+  public String editPost(
+          @Valid @ModelAttribute("post") PostEditDto dto,
+          BindingResult br,
+          RedirectAttributes redirectAttributes
+  ) {
+    log.error("dto: >>" + dto);
+    log.error("flags: >>" + dto.getImgFlag());
+
+    return "redirect:" + EndPoint.POST_EDIT;
+  }
 
   @GetMapping(EndPoint.POST_EDIT)
   @Override
