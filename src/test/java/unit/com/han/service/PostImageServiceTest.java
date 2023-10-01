@@ -36,17 +36,44 @@ public class PostImageServiceTest {
   @InjectMocks
   private PostImageServiceImpl postImageService;
 
-  private List<MultipartFile> dummyFiles;
 
-  private int postId = 1;
+  @Nested
+  class GetAllImagesByPostId_Test {
+    private int postId = 1;
 
-  @BeforeEach
-  public void setUp() {
-    this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
+    private List<PostImage> dummyImages;
+
+    @BeforeEach
+    public void setUp() {
+      this.dummyImages = List.of(
+              new PostImage(postId, "url1", 1),
+              new PostImage(postId, "url2", 2)
+      );
+    }
+    @Test
+    public void getAllImagesByPostId_Throw_Exception_When_Repository_Throws() throws SQLException {
+      when(postImageRepository.findByPostId(postId)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postImageService.getAllImagesByPostId(postId));
+    }
+    @Test
+    public void getAllImagesByPostId_Return_PostImages() throws SQLException {
+      when(postImageRepository.findByPostId(postId)).thenReturn(dummyImages);
+      List<PostImage> images = postImageService.getAllImagesByPostId(postId);
+
+      assertThat(images.size()).isEqualTo(dummyImages.size());
+    }
   }
 
   @Nested
   class CreatePostImage_Test {
+    private int postId = 1;
+
+    private List<MultipartFile> dummyFiles;
+
+    @BeforeEach
+    public void setUp() {
+      this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
+    }
 
     private String pathPrefix = "post/1";
     private List<String> dummyUrls = List.of("1", "2", "3");
@@ -57,19 +84,14 @@ public class PostImageServiceTest {
     );
 
     @Test
-    public void createPostImage_Throws_Exception_When_Insert_Image_Fail() throws Exception {
+    public void createPostImage_Throws_Exception_When_InsertBulk_Fail() throws Exception {
       when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenReturn(dummyUrls);
-
-      for (int i = 0; i < dummyUrls.size(); i++) {
-        when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(i < 1);
-      }
+      when(postImageRepository.insertBulk(dummyPostImage)).thenThrow(SQLException.class);
 
       Exception ex = assertThrows(Exception.class, () -> postImageService.createPostImage(postId, dummyFiles));
 
       verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
-      verify(postImageRepository).insert(dummyPostImage.get(0));
-      verify(postImageRepository).insert(dummyPostImage.get(1));
-      verify(postImageRepository).insert(dummyPostImage.get(2));
+      verify(postImageRepository).insertBulk(dummyPostImage);
       verify(imageUploadService).deleteImages(dummyFiles, pathPrefix);
       assertThat(ex.getMessage()).isEqualTo("이미지 삽입에 실패하였습니다.");
     }
@@ -86,21 +108,14 @@ public class PostImageServiceTest {
     }
 
     @Test
-    public void createPostImage_Return_True_When_Success_All() throws Exception {
-
+    public void createPostImage_Return_True_When_InsertBulk_Success() throws Exception {
       when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenReturn(dummyUrls);
-
-      for (int i = 0; i < dummyUrls.size(); i++) {
-        when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(true);
-      }
+      when(postImageRepository.insertBulk(dummyPostImage)).thenReturn(true);
 
       boolean result = postImageService.createPostImage(postId, dummyFiles);
 
       verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
-      verify(postImageRepository).insert(dummyPostImage.get(0));
-      verify(postImageRepository).insert(dummyPostImage.get(1));
-      verify(postImageRepository).insert(dummyPostImage.get(2));
-
+      verify(postImageRepository).insertBulk(dummyPostImage);
       assertThat(result).isTrue();
     }
   }

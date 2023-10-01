@@ -4,17 +4,16 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
+import com.han.model.PostImage;
 import com.han.repository.PostRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -22,17 +21,13 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class PostServiceImpl implements PostService {
-
-
   private final PostImageService postImageService;
   private final PostRepository postRepository;
-
 
   @Autowired
   public PostServiceImpl(PostRepository postRepository, PostImageService postImageService) {
     this.postRepository = postRepository;
     this.postImageService = postImageService;
-
   }
 
   @Override
@@ -71,7 +66,6 @@ public class PostServiceImpl implements PostService {
       }
     }
 
-
     return isSuccess;
   }
 
@@ -87,16 +81,20 @@ public class PostServiceImpl implements PostService {
     int offset = (page - 1) * limit;
     List<Post> list = postRepository.findAll(order, sort, limit, offset);
 
-
     return list;
   }
 
   @Override
-  public Optional<Post> getPostDetail(int postId) throws SQLException {
-
+  public Optional<PostDetailDto> getPostDetail(int postId) throws SQLException {
+    PostDetailDto result = null;
     Optional<Post> post = postRepository.findById(postId);
 
-    return post;
+    if (post.isPresent()) {
+      List<PostImage> images = postImageService.getAllImagesByPostId(postId);
+      result = toPostDetailDto(post.get(), images);
+    }
+
+    return Optional.ofNullable(result);
   }
 
   private Post fromCreateDtoToPost(PostCreateDto dto) {
@@ -108,6 +106,18 @@ public class PostServiceImpl implements PostService {
   private Post fromUpdateDtoToPost(PostUpdateDto dto) {
     Post post = new Post(dto.getId(), dto.getUserId(), dto.getTitle(), dto.getTextContent());
     return post;
+  }
+
+  private PostDetailDto toPostDetailDto(Post post, List<PostImage> images) {
+    PostDetailDto dto = new PostDetailDto();
+    dto.setId(post.getId());
+    dto.setUserId(post.getUserId());
+    dto.setTitle(post.getTitle());
+    dto.setTextContent(post.getTextContent());
+    dto.setImages(images);
+    dto.setUpdatedAt(post.getUpdatedAt());
+
+    return dto;
   }
 
 }

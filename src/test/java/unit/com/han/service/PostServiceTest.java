@@ -4,6 +4,7 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
@@ -213,7 +214,7 @@ public class PostServiceTest {
       int nonExistingId = validPostId + 1000;
       when(postRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
-      Optional<Post> post = postService.getPostDetail(nonExistingId);
+      Optional<PostDetailDto> post = postService.getPostDetail(nonExistingId);
 
       verify(postRepository).findById(nonExistingId);
       assertThat(post).isNotNull();
@@ -224,7 +225,7 @@ public class PostServiceTest {
     public void getPostDetail_Return_Post() throws SQLException {
       when(postRepository.findById(validPostId)).thenReturn(Optional.of(dummyPost));
 
-      Optional<Post> post = postService.getPostDetail(validPostId);
+      Optional<PostDetailDto> post = postService.getPostDetail(validPostId);
 
       verify(postRepository).findById(validPostId);
       assertThat(post).isNotNull();
@@ -254,7 +255,7 @@ public class PostServiceTest {
 
     @Test
     public void getPostList_Throw_Exception() throws SQLException {
-      when(postRepository.findAll(orderAsc, sort, limit, offset)).thenThrow(SQLException.class);
+      when(postRepository.findAll(orderDesc, sort, limit, offset)).thenThrow(SQLException.class);
       assertThrows(SQLException.class, () -> postService.getPostList(dto));
     }
 
@@ -269,7 +270,6 @@ public class PostServiceTest {
 
       when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
 
-      dto.setOrder(OrderType.DESC.name());
       List<Post> list = postService.getPostList(dto);
 
       verify(postRepository).findAll(orderDesc, sort, limit, offset);
@@ -285,11 +285,11 @@ public class PostServiceTest {
               .mapToObj((i) -> new Post(i))
               .collect(Collectors.toList());
 
-      when(postRepository.findAll(orderAsc, sort, limit, offset)).thenReturn(mockList);
+      when(postRepository.findAll(orderDesc, sort, limit, offset)).thenReturn(mockList);
 
       List<Post> list = postService.getPostList(dto);
 
-      verify(postRepository).findAll(orderAsc, sort, limit, offset);
+      verify(postRepository).findAll(orderDesc, sort, limit, offset);
       assertThat(list.size()).isEqualTo(mockList.size());
       assertThat(list.get(1).getId()).isGreaterThan(list.get(0).getId());
     }

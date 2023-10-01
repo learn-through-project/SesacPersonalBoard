@@ -4,10 +4,10 @@ import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.controller.PostViewControllerImpl;
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,17 +16,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +45,44 @@ public class PostViewControllerTest {
   private PostViewControllerImpl postViewController;
 
   @Nested
+  class ShowPostDetail_Test {
+    private Integer postId = 1;
+
+    private PostDetailDto dummyDetailDto = new PostDetailDto();
+
+    @Test
+    public void showPostDetail_Return_ViewName_With_Null_When_Service_Throws() throws SQLException {
+      when(postService.getPostDetail(postId)).thenThrow(SQLException.class);
+
+      String view = postViewController.showPostDetail(postId, model);
+
+      verify(model).addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+      verify(model).addAttribute("detail", null);
+      assertThat(view).isEqualTo(ViewName.POST_DETAIL);
+    }
+    @Test
+    public void showPostDetail_Return_ViewName_With_Null() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.empty());
+
+      String view = postViewController.showPostDetail(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("detail", null);
+      assertThat(view).isEqualTo(ViewName.POST_DETAIL);
+    }
+
+    @Test
+    public void showPostDetail_Return_ViewName_With_Detail() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.of(dummyDetailDto));
+
+      String view = postViewController.showPostDetail(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("detail", dummyDetailDto);
+      assertThat(view).isEqualTo(ViewName.POST_DETAIL);
+    }
+  }
+  @Nested
   class ShowCreatePostForm_Test {
     private PostCreateDto dto = new PostCreateDto();
     @Test
@@ -56,7 +91,6 @@ public class PostViewControllerTest {
       assertThat(viewName).isEqualTo(ViewName.POST_NEW_VIEW);
     }
   }
-
   @Nested
   class CreatePost_Test {
 

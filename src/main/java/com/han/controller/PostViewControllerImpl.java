@@ -3,22 +3,23 @@ package com.han.controller;
 import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @Controller
@@ -29,6 +30,23 @@ public class PostViewControllerImpl implements PostViewController {
   public PostViewControllerImpl(PostService postService) {
     this.postService = postService;
   }
+
+  @GetMapping(EndPoint.POST_DETAIL)
+  @Override
+  public String showPostDetail(@PathVariable("postId") Integer postId, Model model) throws SQLException {
+    Optional<PostDetailDto> detail = Optional.empty();
+
+    try {
+      detail = postService.getPostDetail(postId);
+    } catch (SQLException ex) {
+      log.error("Error in showPostDetail: >> " + ex.getMessage());
+      model.addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+    }
+
+    model.addAttribute("detail", detail.orElse(null));
+    return ViewName.POST_DETAIL;
+  }
+
 
   @GetMapping(EndPoint.POST_NEW)
   @Override
@@ -74,5 +92,10 @@ public class PostViewControllerImpl implements PostViewController {
     model.addAttribute("count", count);
 
     return ViewName.POST_LIST;
+  }
+
+  @ExceptionHandler(TypeMismatchException.class)
+  public String handleTypeMismatchException(TypeMismatchException ex) {
+    return "redirect:" + EndPoint.POSTS;
   }
 }

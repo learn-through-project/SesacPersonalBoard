@@ -109,14 +109,13 @@ public class PostRepositoryImpl implements PostRepository {
           if (generatedKeys.next()) {
             createdPostId = generatedKeys.getInt(1);
           }
-        }
 
+        }
         conn.commit();
       } catch (Exception ex) {
         conn.rollback();
         throw ex;
       }
-
     }
 
     return createdPostId;

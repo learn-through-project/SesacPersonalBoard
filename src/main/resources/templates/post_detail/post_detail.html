@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Detail</title>
+    <script th:inline="javascript" defer>
+        const _errorMsg = /*[[${error}]]*/ "";
+
+    </script>
+    <script defer>
+        const showAlert = (msg) => {
+            alert(msg);
+        };
+
+        if (_errorMsg) {
+            showAlert(_errorMsg);
+            history.replaceState(null, null, '/posts');
+            window.location.href="/posts";
+        }
+    </script>
+</head>
+<body>
+    <h1>Detail</h1>
+    <div th:if="${detail != null}">
+        <div th:if="${detail.images != null} and ${detail.images.size > 0}" th:each="img: ${detail.images}" >
+            <img th:src="${img.url}" width="100px"/>
+        </div>
+        <div th:text="${detail.id}"></div>
+        <div th:text="${detail.userId}"></div>
+        <div th:text="${detail.title}"></div>
+        <div th:text="${detail.textContent}"></div>
+        <div th:text="${detail.updatedAt}"></div>
+    </div>
+</body>
+</html>

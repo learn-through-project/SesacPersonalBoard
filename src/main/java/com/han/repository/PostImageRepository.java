@@ -7,9 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostImageRepository {
-  public Optional<PostImage> findById(int imageId) throws SQLException;
-  public List<PostImage> findByPostId(int postId) throws SQLException;
-  public boolean insert(PostImage image) throws SQLException;
-  public boolean update(PostImage image) throws SQLException;
-  public boolean deleteById(int imageId) throws SQLException;
+  Optional<PostImage> findById(int imageId) throws SQLException;
+
+  List<PostImage> findByPostId(int postId) throws SQLException;
+
+  boolean insertBulk(List<PostImage> images) throws SQLException;
+
+  Integer insert(PostImage image) throws SQLException;
+
+  boolean update(PostImage image) throws SQLException;
+
+  boolean deleteById(int imageId) throws SQLException;
 }

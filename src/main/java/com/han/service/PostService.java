@@ -1,6 +1,7 @@
 package com.han.service;
 
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 public interface PostService {
   List<Post> getPostList(PostListDto dto) throws SQLException;
-  Optional<Post> getPostDetail(int postId) throws SQLException;
+  Optional<PostDetailDto> getPostDetail(int postId) throws SQLException;
   boolean createPost(PostCreateDto dto) throws Exception;
   boolean editPost(PostUpdateDto dto) throws SQLException;
   boolean deletePermanently(int postId) throws SQLException;

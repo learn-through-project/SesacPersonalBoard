@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Log4j2
 @Service
@@ -27,23 +29,25 @@ public class PostImageServiceImpl implements PostImageService {
     this.imageUploadService = imageUploadService;
   }
 
+  @Override
+  public List<PostImage> getAllImagesByPostId(Integer postId) throws SQLException {
+    List<PostImage> images = postImageRepository.findByPostId(postId);
+    return images;
+  }
 
-  @Transactional
   @Override
   public boolean createPostImage(Integer postId, List<MultipartFile> files) throws Exception {
-    List<Boolean> results = new LinkedList<>();
     String pathPrefix = "post/" + postId;
 
     try {
       List<String> urls = imageUploadService.uploadImages(files, pathPrefix);
 
-      for (int i = 0; i < urls.size(); i++) {
-        results.add(postImageRepository.insert(new PostImage(postId, urls.get(i), i + 1)));
-      }
+      List<PostImage> postImages = IntStream
+              .range(0, files.size())
+              .mapToObj((idx) -> new PostImage(postId, urls.get(idx), idx + 1))
+              .collect(Collectors.toList());
 
-      for (boolean isSuccess : results) {
-        if (!isSuccess) throw new Exception("이미지 삽입에 실패하였습니다.");
-      }
+      postImageRepository.insertBulk(postImages);
 
     } catch (Exception ex) {
       log.error("error in createPostImage: >>" + ex.getMessage());
