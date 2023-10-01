@@ -11,10 +11,7 @@ import com.han.repository.PostRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -22,17 +19,13 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class PostServiceImpl implements PostService {
-
-
   private final PostImageService postImageService;
   private final PostRepository postRepository;
-
 
   @Autowired
   public PostServiceImpl(PostRepository postRepository, PostImageService postImageService) {
     this.postRepository = postRepository;
     this.postImageService = postImageService;
-
   }
 
   @Override
@@ -71,7 +64,6 @@ public class PostServiceImpl implements PostService {
       }
     }
 
-
     return isSuccess;
   }
 
@@ -86,7 +78,6 @@ public class PostServiceImpl implements PostService {
 
     int offset = (page - 1) * limit;
     List<Post> list = postRepository.findAll(order, sort, limit, offset);
-
 
     return list;
   }

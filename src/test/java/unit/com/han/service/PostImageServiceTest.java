@@ -57,19 +57,14 @@ public class PostImageServiceTest {
     );
 
     @Test
-    public void createPostImage_Throws_Exception_When_Insert_Image_Fail() throws Exception {
+    public void createPostImage_Throws_Exception_When_InsertBulk_Fail() throws Exception {
       when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenReturn(dummyUrls);
-
-      for (int i = 0; i < dummyUrls.size(); i++) {
-        when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(i < 1);
-      }
+      when(postImageRepository.insertBulk(dummyPostImage)).thenThrow(SQLException.class);
 
       Exception ex = assertThrows(Exception.class, () -> postImageService.createPostImage(postId, dummyFiles));
 
       verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
-      verify(postImageRepository).insert(dummyPostImage.get(0));
-      verify(postImageRepository).insert(dummyPostImage.get(1));
-      verify(postImageRepository).insert(dummyPostImage.get(2));
+      verify(postImageRepository).insertBulk(dummyPostImage);
       verify(imageUploadService).deleteImages(dummyFiles, pathPrefix);
       assertThat(ex.getMessage()).isEqualTo("이미지 삽입에 실패하였습니다.");
     }
@@ -86,21 +81,14 @@ public class PostImageServiceTest {
     }
 
     @Test
-    public void createPostImage_Return_True_When_Success_All() throws Exception {
-
+    public void createPostImage_Return_True_When_InsertBulk_Success() throws Exception {
       when(imageUploadService.uploadImages(dummyFiles, pathPrefix)).thenReturn(dummyUrls);
-
-      for (int i = 0; i < dummyUrls.size(); i++) {
-        when(postImageRepository.insert(dummyPostImage.get(i))).thenReturn(true);
-      }
+      when(postImageRepository.insertBulk(dummyPostImage)).thenReturn(true);
 
       boolean result = postImageService.createPostImage(postId, dummyFiles);
 
       verify(imageUploadService).uploadImages(dummyFiles, pathPrefix);
-      verify(postImageRepository).insert(dummyPostImage.get(0));
-      verify(postImageRepository).insert(dummyPostImage.get(1));
-      verify(postImageRepository).insert(dummyPostImage.get(2));
-
+      verify(postImageRepository).insertBulk(dummyPostImage);
       assertThat(result).isTrue();
     }
   }

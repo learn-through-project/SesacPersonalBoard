@@ -2,18 +2,17 @@ package com.han.repository;
 
 import com.han.constants.tablesColumns.TableColumnsPostImages;
 import com.han.model.PostImage;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Repository
 public class PostImageRepositoryImpl implements PostImageRepository {
 
@@ -63,8 +62,38 @@ public class PostImageRepositoryImpl implements PostImageRepository {
     return result > 0;
   }
 
+  public boolean insertBulk(List<PostImage> images) throws SQLException {
+    String insertQuery = "INSERT INTO "
+            + TableColumnsPostImages.TABLE.getName() + " ( "
+            + TableColumnsPostImages.POST_ID + ", "
+            + TableColumnsPostImages.URL + ", "
+            + TableColumnsPostImages.IMAGE_ORDER + " ) "
+            + " VALUES (?, ?, ?)";
+
+    try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
+        for (PostImage image : images) {
+          statement.setInt(1, image.getPostId());
+          statement.setString(2, image.getUrl());
+          statement.setInt(3, image.getImageOrder());
+
+          statement.executeUpdate();
+        }
+        conn.commit();
+      } catch (Exception ex) {
+        log.error("Error in insertBulk Image: >>" + ex.getMessage());
+        conn.rollback();
+        throw ex;
+      }
+    }
+
+    return true;
+  }
+
   @Override
-  public boolean insert(PostImage image) throws SQLException {
+  public Integer insert(PostImage image) throws SQLException {
     String insertQuery = "INSERT INTO "
             + TableColumnsPostImages.TABLE.getName() + " ( "
             + TableColumnsPostImages.POST_ID + ", "
@@ -72,19 +101,31 @@ public class PostImageRepositoryImpl implements PostImageRepository {
             + TableColumnsPostImages.IMAGE_ORDER + " ) "
             + " VALUES (?, ?, ?)";
 
-    int result = 0;
+    Integer createdImageId = null;
 
     try (Connection conn = dataSource.getConnection()) {
       conn.setAutoCommit(false);
-      try (PreparedStatement statement = conn.prepareStatement(insertQuery)) {
+      try (PreparedStatement statement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
         statement.setInt(1, image.getPostId());
         statement.setString(2, image.getUrl());
         statement.setInt(3, image.getImageOrder());
-        result = statement.executeUpdate();
+
+        statement.executeUpdate();
+
+        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+          if (generatedKeys.next()) {
+            createdImageId = generatedKeys.getInt(1);
+          }
+        }
+
+        conn.commit();
+      } catch (Exception ex) {
+        conn.rollback();
+        throw ex;
       }
     }
 
-    return result > 0;
+    return createdImageId;
   }
 
   @Override
