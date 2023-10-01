@@ -30,6 +30,10 @@
         <div th:text="${detail.title}"></div>
         <div th:text="${detail.textContent}"></div>
         <div th:text="${detail.updatedAt}"></div>
+
+        <a th:href="@{/post/{id}/edit(id=${detail.id})}">
+            <button>수정하기</button>
+        </a>
     </div>
 </body>
 </html>

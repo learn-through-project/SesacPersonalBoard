@@ -5,6 +5,7 @@ import com.han.constants.ViewName;
 import com.han.controller.PostViewControllerImpl;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostDetailDto;
+import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -43,6 +44,17 @@ public class PostViewControllerTest {
 
   @InjectMocks
   private PostViewControllerImpl postViewController;
+
+  @Nested
+  class ShowEditPostForm_Test {
+
+    private PostEditDto dto = new PostEditDto();
+    @Test
+    public void showEditPostForm_Return_View() {
+      String viewName = postViewController.showEditPostForm(dto, bindingResult);
+      assertThat(viewName).isEqualTo(ViewName.POST_EDIT_VIEW);
+    }
+  }
 
   @Nested
   class ShowPostDetail_Test {

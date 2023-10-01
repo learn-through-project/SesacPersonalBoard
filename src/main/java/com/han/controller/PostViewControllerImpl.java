@@ -4,6 +4,7 @@ import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostDetailDto;
+import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -29,6 +30,13 @@ public class PostViewControllerImpl implements PostViewController {
   @Autowired
   public PostViewControllerImpl(PostService postService) {
     this.postService = postService;
+  }
+
+
+  @GetMapping(EndPoint.POST_EDIT)
+  @Override
+  public String showEditPostForm(@Valid @ModelAttribute("post") PostEditDto dto, BindingResult br) {
+    return ViewName.POST_EDIT_VIEW;
   }
 
   @GetMapping(EndPoint.POST_DETAIL)

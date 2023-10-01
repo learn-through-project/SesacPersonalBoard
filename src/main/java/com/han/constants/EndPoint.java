@@ -6,6 +6,7 @@ public class EndPoint {
   public static final String POSTS = "/posts";
   public static final String POST_DETAIL = "/post/{postId}";
   public static final String POST_NEW = "/post/new";
+  public static final String POST_EDIT = "/post/{postId}/edit";
 }
 
 
