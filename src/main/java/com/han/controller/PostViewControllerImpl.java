@@ -3,6 +3,7 @@ package com.han.controller;
 import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -33,7 +34,7 @@ public class PostViewControllerImpl implements PostViewController {
   @GetMapping(EndPoint.POST_DETAIL)
   @Override
   public String showPostDetail(@PathVariable("postId") Integer postId, Model model) throws SQLException {
-    Optional<Post> detail = Optional.empty();
+    Optional<PostDetailDto> detail = Optional.empty();
 
     try {
       detail = postService.getPostDetail(postId);

@@ -29,6 +29,11 @@ public class PostImageServiceImpl implements PostImageService {
     this.imageUploadService = imageUploadService;
   }
 
+  @Override
+  public List<PostImage> getAllImagesByPostId(Integer postId) throws SQLException {
+    List<PostImage> images = postImageRepository.findByPostId(postId);
+    return images;
+  }
 
   @Override
   public boolean createPostImage(Integer postId, List<MultipartFile> files) throws Exception {

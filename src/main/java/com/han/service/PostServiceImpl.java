@@ -4,9 +4,11 @@ import com.han.constants.OrderType;
 import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
+import com.han.dto.PostDetailDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
+import com.han.model.PostImage;
 import com.han.repository.PostRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,11 +85,16 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public Optional<Post> getPostDetail(int postId) throws SQLException {
-
+  public Optional<PostDetailDto> getPostDetail(int postId) throws SQLException {
+    PostDetailDto result = null;
     Optional<Post> post = postRepository.findById(postId);
 
-    return post;
+    if (post.isPresent()) {
+      List<PostImage> images = postImageService.getAllImagesByPostId(postId);
+      result = toPostDetailDto(post.get(), images);
+    }
+
+    return Optional.ofNullable(result);
   }
 
   private Post fromCreateDtoToPost(PostCreateDto dto) {
@@ -99,6 +106,18 @@ public class PostServiceImpl implements PostService {
   private Post fromUpdateDtoToPost(PostUpdateDto dto) {
     Post post = new Post(dto.getId(), dto.getUserId(), dto.getTitle(), dto.getTextContent());
     return post;
+  }
+
+  private PostDetailDto toPostDetailDto(Post post, List<PostImage> images) {
+    PostDetailDto dto = new PostDetailDto();
+    dto.setId(post.getId());
+    dto.setUserId(post.getUserId());
+    dto.setTitle(post.getTitle());
+    dto.setTextContent(post.getTextContent());
+    dto.setImages(images);
+    dto.setUpdatedAt(post.getUpdatedAt());
+
+    return dto;
   }
 
 }

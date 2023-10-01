@@ -36,17 +36,44 @@ public class PostImageServiceTest {
   @InjectMocks
   private PostImageServiceImpl postImageService;
 
-  private List<MultipartFile> dummyFiles;
 
-  private int postId = 1;
+  @Nested
+  class GetAllImagesByPostId_Test {
+    private int postId = 1;
 
-  @BeforeEach
-  public void setUp() {
-    this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
+    private List<PostImage> dummyImages;
+
+    @BeforeEach
+    public void setUp() {
+      this.dummyImages = List.of(
+              new PostImage(postId, "url1", 1),
+              new PostImage(postId, "url2", 2)
+      );
+    }
+    @Test
+    public void getAllImagesByPostId_Throw_Exception_When_Repository_Throws() throws SQLException {
+      when(postImageRepository.findByPostId(postId)).thenThrow(SQLException.class);
+      assertThrows(SQLException.class, () -> postImageService.getAllImagesByPostId(postId));
+    }
+    @Test
+    public void getAllImagesByPostId_Return_PostImages() throws SQLException {
+      when(postImageRepository.findByPostId(postId)).thenReturn(dummyImages);
+      List<PostImage> images = postImageService.getAllImagesByPostId(postId);
+
+      assertThat(images.size()).isEqualTo(dummyImages.size());
+    }
   }
 
   @Nested
   class CreatePostImage_Test {
+    private int postId = 1;
+
+    private List<MultipartFile> dummyFiles;
+
+    @BeforeEach
+    public void setUp() {
+      this.dummyFiles = List.of(dummyFile, dummyFile, dummyFile);
+    }
 
     private String pathPrefix = "post/1";
     private List<String> dummyUrls = List.of("1", "2", "3");
