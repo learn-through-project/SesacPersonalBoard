@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,6 +49,44 @@ public class PostViewControllerTest {
   private PostViewControllerImpl postViewController;
 
   @Nested
+  class ShowPostDetail_Test {
+    private Integer postId = 1;
+
+    private Post dummyPost = new Post();
+
+    @Test
+    public void showPostDetail_Return_ViewName_With_Null_When_Service_Throws() throws SQLException {
+      when(postService.getPostDetail(postId)).thenThrow(SQLException.class);
+
+      String view = postViewController.showPostDetail(postId, model);
+
+      verify(model).addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+      verify(model).addAttribute("detail", null);
+      assertThat(view).isEqualTo(ViewName.POST_DETAIL);
+    }
+    @Test
+    public void showPostDetail_Return_ViewName_With_Null() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.empty());
+
+      String view = postViewController.showPostDetail(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("detail", null);
+      assertThat(view).isEqualTo(ViewName.POST_DETAIL);
+    }
+
+    @Test
+    public void showPostDetail_Return_ViewName_With_Detail() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.of(dummyPost));
+
+      String view = postViewController.showPostDetail(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("detail", dummyPost);
+      assertThat(view).isEqualTo(ViewName.POST_DETAIL);
+    }
+  }
+  @Nested
   class ShowCreatePostForm_Test {
     private PostCreateDto dto = new PostCreateDto();
     @Test
@@ -56,7 +95,6 @@ public class PostViewControllerTest {
       assertThat(viewName).isEqualTo(ViewName.POST_NEW_VIEW);
     }
   }
-
   @Nested
   class CreatePost_Test {
 
