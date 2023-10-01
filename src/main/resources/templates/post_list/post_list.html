@@ -42,6 +42,7 @@
 
     <div class="table">
         <div class="table-header">
+            <div class="cell header-cell">postId</div>
             <div class="cell header-cell">userId</div>
             <div class="cell header-cell">title</div>
             <div class="cell header-cell">textContent</div>
@@ -50,6 +51,7 @@
 
         <a th:href="@{/post/{id}(id=${post.id})}" th:each="post : ${list}" class="table-container">
 
+            <div th:text="${post.id}" class="cell"></div>
             <div th:text="${post.userId}" class="cell"></div>
             <div th:text="${post.title}" class="cell"></div>
             <div th:text="${post.textContent}" class="cell"></div>

@@ -21,7 +21,7 @@ public class PostListDto {
   private Integer page;
 
   @ValidEnum(enumClass = OrderType.class, message = "Check order type")
-  private OrderType order = OrderType.ASC;
+  private OrderType order = OrderType.DESC;
 
   @ValidEnum(enumClass = SortType.class, message = "Check sort type")
   private SortType sort = SortType.NEW;
