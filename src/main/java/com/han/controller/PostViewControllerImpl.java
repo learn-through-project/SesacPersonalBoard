@@ -35,7 +35,20 @@ public class PostViewControllerImpl implements PostViewController {
 
   @GetMapping(EndPoint.POST_EDIT)
   @Override
-  public String showEditPostForm(@Valid @ModelAttribute("post") PostEditDto dto, BindingResult br) {
+  public String showPostEditForm(@PathVariable("postId") Integer postId, Model model) {
+
+    Optional<PostDetailDto> detail = Optional.empty();
+
+    try {
+      detail = postService.getPostDetail(postId);
+    } catch (SQLException ex) {
+      log.error("Error in showPostDetail: >> " + ex.getMessage());
+      model.addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+    }
+
+    model.addAttribute("post", detail.orElse(null));
+
+
     return ViewName.POST_EDIT_VIEW;
   }
 

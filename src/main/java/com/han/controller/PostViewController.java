@@ -1,7 +1,6 @@
 package com.han.controller;
 
 import com.han.dto.PostCreateDto;
-import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
 import jakarta.validation.Valid;
 import org.springframework.ui.Model;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 public interface PostViewController {
@@ -23,5 +21,5 @@ public interface PostViewController {
 
   String getPostList(@Valid PostListDto dto, BindingResult br, Model model) throws SQLException;
 
-  String showEditPostForm(@Valid @ModelAttribute("post") PostEditDto dto, BindingResult br);
+  String showPostEditForm(@PathVariable("postId") Integer postId, Model model);
 }

@@ -48,11 +48,38 @@ public class PostViewControllerTest {
   @Nested
   class ShowEditPostForm_Test {
 
-    private PostEditDto dto = new PostEditDto();
+    private Integer postId = 1;
+    private PostDetailDto dummyDetailDto = new PostDetailDto();
     @Test
-    public void showEditPostForm_Return_View() {
-      String viewName = postViewController.showEditPostForm(dto, bindingResult);
-      assertThat(viewName).isEqualTo(ViewName.POST_EDIT_VIEW);
+    public void showPostEditForm_Return_ViewName_With_Null_When_Service_Throws() throws SQLException {
+      when(postService.getPostDetail(postId)).thenThrow(SQLException.class);
+
+      String view = postViewController.showPostEditForm(postId, model);
+
+      verify(model).addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+      verify(model).addAttribute("post", null);
+      assertThat(view).isEqualTo(ViewName.POST_EDIT_VIEW);
+    }
+    @Test
+    public void showPostEditForm_Return_ViewName_With_Null() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.empty());
+
+      String view = postViewController.showPostEditForm(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("post", null);
+      assertThat(view).isEqualTo(ViewName.POST_EDIT_VIEW);
+    }
+
+    @Test
+    public void showPostEditForm_Return_ViewName_With_Detail() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.of(dummyDetailDto));
+
+      String view = postViewController.showPostEditForm(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("post", dummyDetailDto);
+      assertThat(view).isEqualTo(ViewName.POST_EDIT_VIEW);
     }
   }
 
