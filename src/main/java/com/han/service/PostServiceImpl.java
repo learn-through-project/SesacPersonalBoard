@@ -5,8 +5,8 @@ import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostDetailDto;
+import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
-import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
 import com.han.model.PostImage;
 import com.han.repository.PostRepository;
@@ -43,7 +43,10 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public boolean editPost(PostUpdateDto dto) throws SQLException {
+  public boolean editPost(PostEditDto dto) throws Exception {
+
+    postImageService.editPostImage(dto.getId(), dto.getImages(), dto.getImgFlag());
+
     Post post = fromUpdateDtoToPost(dto);
     boolean result = postRepository.update(post);
     return result;
@@ -103,7 +106,7 @@ public class PostServiceImpl implements PostService {
     return post;
   }
 
-  private Post fromUpdateDtoToPost(PostUpdateDto dto) {
+  private Post fromUpdateDtoToPost(PostEditDto dto) {
     Post post = new Post(dto.getId(), dto.getUserId(), dto.getTitle(), dto.getTextContent());
     return post;
   }

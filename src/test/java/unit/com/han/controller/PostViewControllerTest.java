@@ -46,6 +46,19 @@ public class PostViewControllerTest {
   private PostViewControllerImpl postViewController;
 
   @Nested
+  class EditPost_Test {
+
+    private PostEditDto dummyDto = new PostEditDto();
+    @Test
+    public void editPost_Return_View_Success() throws Exception {
+      String viewName = postViewController.editPost(dummyDto, bindingResult, redirectAttributes);
+      assertThat(viewName).isEqualTo("hi");
+    }
+
+
+  }
+
+  @Nested
   class ShowEditPostForm_Test {
 
     private Integer postId = 1;

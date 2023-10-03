@@ -17,19 +17,9 @@ import java.sql.SQLException;
 public interface PostViewController {
   String showPostDetail(@PathVariable("postId") Integer postId, Model model) throws SQLException;
   String showCreatePostForm(@Valid @ModelAttribute("post") PostCreateDto dto, BindingResult br);
-
-  String createPost(
-          @Valid @ModelAttribute("post") PostCreateDto dto, BindingResult br, RedirectAttributes redirectAttributes
-  );
-
+  String createPost(@Valid @ModelAttribute("post") PostCreateDto dto, BindingResult br, RedirectAttributes redirectAttributes);
   String getPostList(@Valid PostListDto dto, BindingResult br, Model model) throws SQLException;
-
   @PutMapping(EndPoint.POST)
-  String editPost(
-          @Valid @ModelAttribute("post") PostEditDto dto,
-          BindingResult br,
-          RedirectAttributes redirectAttributes
-  );
-
+  String editPost(@Valid @ModelAttribute("post") PostEditDto dto, BindingResult br, RedirectAttributes redirectAttributes) throws Exception;
   String showPostEditForm(@PathVariable("postId") Integer postId, Model model);
 }

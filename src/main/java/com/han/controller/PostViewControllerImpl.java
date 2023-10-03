@@ -40,13 +40,37 @@ public class PostViewControllerImpl implements PostViewController {
           RedirectAttributes redirectAttributes
   ) {
 
-    return ViewName.POST_DETAIL;
+    if (br.hasErrors()) {
+      redirectAttributes.addFlashAttribute("post", dto);
+      redirectAttributes.addFlashAttribute("isSuccess", 0);
+      redirectAttributes.addFlashAttribute("isRedirected", 1);
+      return "redirect:" + "/post/" + dto.getId() + "/edit";
+    }
+
+
+    boolean isSuccess = false;
+    try {
+      isSuccess = postService.editPost(dto);
+    } catch (Exception ex) {
+      redirectAttributes.addFlashAttribute("isSuccess", 0);
+      redirectAttributes.addFlashAttribute("msg", ex.getMessage());
+    }
+
+    if (isSuccess) {
+      redirectAttributes.addFlashAttribute("isSuccess", 1);
+      return "redirect:" + "/post/" + dto.getId();
+    } else {
+      redirectAttributes.addFlashAttribute("isSuccess", 0);
+      redirectAttributes.addFlashAttribute("post", dto);
+      redirectAttributes.addFlashAttribute("isRedirected", 1);
+      return "redirect:" + "/post/" + dto.getId() + "/edit";
+    }
+
   }
 
   @GetMapping(EndPoint.POST_EDIT)
   @Override
   public String showPostEditForm(@PathVariable("postId") Integer postId, Model model) {
-
     Optional<PostDetailDto> detail = Optional.empty();
 
     try {
