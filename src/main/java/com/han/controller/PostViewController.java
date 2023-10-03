@@ -21,5 +21,5 @@ public interface PostViewController {
   String getPostList(@Valid PostListDto dto, BindingResult br, Model model) throws SQLException;
   String editPost(@Valid @ModelAttribute("post") PostEditDto dto, BindingResult br, RedirectAttributes redirectAttributes);
   String showPostEditForm(@PathVariable("postId") Integer postId, Model model);
-  String deletePost(@PathVariable ("postId") Integer id) throws SQLException;
+  String deletePost(@PathVariable ("postId") Integer id) throws Exception;
 }
