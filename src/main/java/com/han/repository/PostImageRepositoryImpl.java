@@ -125,6 +125,24 @@ public class PostImageRepositoryImpl implements PostImageRepository {
   }
 
   @Override
+  public boolean deleteByPostId(Integer PostId) throws SQLException {
+    String deleteQuery = "DELETE FROM " + TableColumnsPostImages.TABLE.getName()
+            + " WHERE " + TableColumnsPostImages.POST_ID.getName() + " = ? ";
+
+    int result = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
+        statement.setInt(1, PostId);
+
+        result = statement.executeUpdate();
+      }
+    }
+
+    return result > 0;
+  }
+
+  @Override
   public boolean deleteById(int imageId) throws SQLException {
     String deleteQuery = "DELETE FROM " + TableColumnsPostImages.TABLE.getName()
             + " WHERE " + TableColumnsPostImages.ID.getName() + " = ? ";

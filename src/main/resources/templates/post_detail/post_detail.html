@@ -34,6 +34,11 @@
         <a th:href="@{/post/{id}/edit(id=${detail.id})}">
             <button>수정하기</button>
         </a>
+
+        <form class="form" th:action="@{/post/{id}(id=${detail.id})}" method="post" >
+            <input type="hidden" name="_method" value="delete"/>
+            <button type="submit">삭제하기</button>
+        </form>
     </div>
 </body>
 </html>

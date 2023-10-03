@@ -37,8 +37,12 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  public boolean deletePermanently(int postId) throws SQLException {
+  public boolean deletePermanently(int postId) throws Exception {
+    // TODO - transaction 관리 안되고있음
+    postImageService.deletePostImage(postId);
     boolean result = postRepository.deletePermanently(postId);
+
+
     return result;
   }
 

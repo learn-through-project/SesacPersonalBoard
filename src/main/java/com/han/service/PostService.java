@@ -15,6 +15,6 @@ public interface PostService {
   Optional<PostDetailDto> getPostDetail(int postId) throws SQLException;
   boolean createPost(PostCreateDto dto) throws Exception;
   boolean editPost(PostEditDto dto) throws Exception;
-  boolean deletePermanently(int postId) throws SQLException;
+  boolean deletePermanently(int postId) throws Exception;
   int getPostListTotalCount() throws SQLException;
 }

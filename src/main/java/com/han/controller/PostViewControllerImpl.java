@@ -32,6 +32,13 @@ public class PostViewControllerImpl implements PostViewController {
     this.postService = postService;
   }
 
+  @DeleteMapping("post/{postId}")
+  @Override
+  public String deletePost(@PathVariable("postId") Integer postId) throws Exception {
+    postService.deletePermanently(postId);
+    return ViewName.POST_LIST;
+  }
+
   @PutMapping(EndPoint.POST)
   @Override
   public String editPost(

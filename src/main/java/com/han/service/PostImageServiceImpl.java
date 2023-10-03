@@ -31,6 +31,33 @@ public class PostImageServiceImpl implements PostImageService {
   }
 
   @Override
+  public boolean deletePostImage(Integer postId) throws Exception {
+    String pathPrefix = PATH_PREFIX + postId;
+    List<MultipartFile> cachedExistingFiles = getAllExistingImages(postId, pathPrefix);
+
+    Integer count = postImageRepository.count(postId);
+    log.info("count: > " + count);
+    try {
+      for (int i = 0; i < count; i++) {
+        log.info("path: > " + pathPrefix + "/" + i);
+        imageUploadService.deleteImage(pathPrefix + "/" + i);
+      }
+
+      postImageRepository.deleteByPostId(postId);
+
+    } catch (Exception ex) {
+      log.error("error in editPostImage: >>" + ex.getMessage());
+      imageUploadService.uploadImages(cachedExistingFiles, pathPrefix);
+      throw new Exception("이미지 삽입에 실패하였습니다.");
+    }
+
+
+
+
+    return false;
+  }
+
+  @Override
   public boolean editPostImage(Integer postId, List<MultipartFile> files, List<Integer> fileFlags) throws Exception {
     String pathPrefix = PATH_PREFIX + postId;
     List<Integer> newFlags = rearrangeFlags(fileFlags);
@@ -56,7 +83,7 @@ public class PostImageServiceImpl implements PostImageService {
       postImageRepository.upsertBulk(postId, postImages);
 
     } catch (Exception ex) {
-      log.error("error in createPostImage: >>" + ex.getMessage());
+      log.error("error in editPostImage: >>" + ex.getMessage());
       imageUploadService.deleteImages(fileList, pathPrefix);
       imageUploadService.uploadImages(cachedExistingFiles, pathPrefix);
       throw new Exception("이미지 삽입에 실패하였습니다.");
