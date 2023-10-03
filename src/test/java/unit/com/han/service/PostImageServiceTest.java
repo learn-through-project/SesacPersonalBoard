@@ -36,6 +36,14 @@ public class PostImageServiceTest {
   @InjectMocks
   private PostImageServiceImpl postImageService;
 
+  @Nested
+  class EDITPostImage_Test {
+    @Test
+    public void editPostImage_Return_True_When_Whole_Process_Success() {
+      // TODO
+    }
+  }
+
 
   @Nested
   class GetAllImagesByPostId_Test {

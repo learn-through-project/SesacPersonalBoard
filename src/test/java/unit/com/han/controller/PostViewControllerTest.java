@@ -5,6 +5,7 @@ import com.han.constants.ViewName;
 import com.han.controller.PostViewControllerImpl;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostDetailDto;
+import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -43,6 +44,57 @@ public class PostViewControllerTest {
 
   @InjectMocks
   private PostViewControllerImpl postViewController;
+
+  @Nested
+  class EditPost_Test {
+
+    private PostEditDto dummyDto = new PostEditDto();
+    @Test
+    public void editPost_Return_View_Success() throws Exception {
+      String viewName = postViewController.editPost(dummyDto, bindingResult, redirectAttributes);
+      assertThat(viewName).isEqualTo("hi");
+    }
+
+
+  }
+
+  @Nested
+  class ShowEditPostForm_Test {
+
+    private Integer postId = 1;
+    private PostDetailDto dummyDetailDto = new PostDetailDto();
+    @Test
+    public void showPostEditForm_Return_ViewName_With_Null_When_Service_Throws() throws SQLException {
+      when(postService.getPostDetail(postId)).thenThrow(SQLException.class);
+
+      String view = postViewController.showPostEditForm(postId, model);
+
+      verify(model).addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+      verify(model).addAttribute("post", null);
+      assertThat(view).isEqualTo(ViewName.POST_EDIT_VIEW);
+    }
+    @Test
+    public void showPostEditForm_Return_ViewName_With_Null() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.empty());
+
+      String view = postViewController.showPostEditForm(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("post", null);
+      assertThat(view).isEqualTo(ViewName.POST_EDIT_VIEW);
+    }
+
+    @Test
+    public void showPostEditForm_Return_ViewName_With_Detail() throws SQLException {
+      when(postService.getPostDetail(postId)).thenReturn(Optional.of(dummyDetailDto));
+
+      String view = postViewController.showPostEditForm(postId, model);
+
+      verify(postService).getPostDetail(postId);
+      verify(model).addAttribute("post", dummyDetailDto);
+      assertThat(view).isEqualTo(ViewName.POST_EDIT_VIEW);
+    }
+  }
 
   @Nested
   class ShowPostDetail_Test {

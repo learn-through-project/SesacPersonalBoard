@@ -4,6 +4,7 @@ package com.han.service;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.StorageException;
+import com.han.utils.SimpleMultipartFile;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,11 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.IntStream;
 
 @Log4j2
 @Service
@@ -48,7 +46,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     try {
       Blob blob = storage.get(blobName);
       isSuccess = blob.delete();
-    } catch (StorageException ex) {
+    } catch (Exception ex) {
       log.error(blobName + "파일 삭제에 실패하였습니다.");
     }
 
@@ -78,5 +76,25 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     }
 
     return urls;
+  }
+
+  @Override
+  public String updateImagePath(String currentPath, String nextPath) {
+    Blob currentBlob = storage.get(currentPath);
+    Blob nextBlob =  storage.create(nextPath, currentBlob.getContent(), currentBlob.getContentType());
+    String url = getUrl(nextBlob.getName());
+
+    return url;
+  }
+
+  public MultipartFile downloadFile(String path) {
+    Blob blob = storage.get(path);
+    MultipartFile file = new SimpleMultipartFile(
+            path,
+            blob.getContent(),
+            blob.getContentType()
+    );
+
+    return file;
   }
 }

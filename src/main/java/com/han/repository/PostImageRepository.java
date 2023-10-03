@@ -18,4 +18,8 @@ public interface PostImageRepository {
   boolean update(PostImage image) throws SQLException;
 
   boolean deleteById(int imageId) throws SQLException;
+
+  public boolean upsertBulk(Integer postId, List<PostImage> images) throws SQLException;
+
+  public int count (Integer postId) throws SQLException;
 }

@@ -66,6 +66,7 @@ public class PostRepositoryImpl implements PostRepository {
   public boolean update(Post post) throws SQLException {
     String updateQuery = "UPDATE posts SET "
             + TableColumnsPost.USER_ID + " = ? , "
+            + TableColumnsPost.TITLE + " = ? ,"
             + TableColumnsPost.TEXT_CONTENT + " = ? "
             + " WHERE " + TableColumnsPost.ID + " = ?";
 
@@ -75,8 +76,9 @@ public class PostRepositoryImpl implements PostRepository {
     try (Connection conn = dataSource.getConnection()) {
       try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
         statement.setInt(1, post.getUserId());
-        statement.setString(2, post.getTextContent());
-        statement.setInt(3, post.getId());
+        statement.setString(2, post.getTitle());
+        statement.setString(3, post.getTextContent());
+        statement.setInt(4, post.getId());
 
         result = statement.executeUpdate();
       }

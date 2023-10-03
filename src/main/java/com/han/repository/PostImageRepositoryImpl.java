@@ -24,6 +24,107 @@ public class PostImageRepositoryImpl implements PostImageRepository {
   }
 
   @Override
+  public int count (Integer postId) throws SQLException {
+    String countSql = "SELECT COUNT(*) FROM "
+            + TableColumnsPostImages.TABLE.getName()
+            + " WHERE " + TableColumnsPostImages.POST_ID.getName() + " =?";
+
+    int count = 0;
+
+    try (Connection conn = dataSource.getConnection()) {
+      try (PreparedStatement statement = conn.prepareStatement(countSql)) {
+        statement.setInt(1, postId);
+        try (ResultSet rs = statement.executeQuery()) {
+          if (rs != null && rs.next()) {
+            count = rs.getInt(1);
+          }
+        }
+      }
+    }
+
+    return count;
+  }
+
+
+  @Override
+  public boolean upsertBulk(Integer postId, List<PostImage> images) throws SQLException {
+    String selectSql = "SELECT * FROM "
+            + TableColumnsPostImages.TABLE.getName()
+            + " WHERE " + TableColumnsPostImages.POST_ID.getName() + " = ?"
+            + " AND " + TableColumnsPostImages.IMAGE_ORDER.getName() + " = ?";
+
+    String updateQuery = "UPDATE " + TableColumnsPostImages.TABLE.getName() + " SET "
+            + TableColumnsPostImages.POST_ID.getName() + " = ? , "
+            + TableColumnsPostImages.URL.getName() + " = ? , "
+            + TableColumnsPostImages.IMAGE_ORDER.getName() + " = ? "
+            + " WHERE " + TableColumnsPostImages.ID.getName() + " = ? ";
+
+    String insertQuery = "INSERT INTO "
+            + TableColumnsPostImages.TABLE.getName() + " ( "
+            + TableColumnsPostImages.POST_ID.getName() + ", "
+            + TableColumnsPostImages.URL.getName() + ", "
+            + TableColumnsPostImages.IMAGE_ORDER.getName() + " ) "
+            + " VALUES (?, ?, ?)";
+
+    String deleteQuery = "DELETE FROM "
+            + TableColumnsPostImages.TABLE.getName()
+            + " WHERE " + TableColumnsPostImages.POST_ID.getName() + " = ?"
+            + " AND " + TableColumnsPostImages.IMAGE_ORDER.getName() + " > "
+            + Integer.toString(images.size() - 1);
+
+    try (Connection conn = dataSource.getConnection()) {
+      conn.setAutoCommit(false);
+
+      try {
+        for (PostImage image: images) {
+          PostImage selectedImage = null;
+
+          try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+            selectStmt.setInt(1, postId);
+            selectStmt.setInt(2, image.getImageOrder());
+            try (ResultSet rs = selectStmt.executeQuery()) {
+              while (rs.next()) {
+                log.info("exceute next");
+                selectedImage = resultSetToPostImage(rs);
+              }
+            }
+          }
+
+          if (selectedImage != null) {
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
+              updateStmt.setInt(1, image.getPostId());
+              updateStmt.setString(2, image.getUrl());
+              updateStmt.setInt(3, image.getImageOrder());
+              updateStmt.setInt(4, selectedImage.getId());
+              updateStmt.executeUpdate();
+            }
+          } else {
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+              insertStmt.setInt(1, image.getPostId());
+              insertStmt.setString(2, image.getUrl());
+              insertStmt.setInt(3, image.getImageOrder());
+              insertStmt.executeUpdate();
+            }
+          }
+        }
+
+        try (PreparedStatement deleteStmt = conn.prepareStatement(deleteQuery)) {
+          deleteStmt.setInt(1, postId);
+          deleteStmt.executeUpdate();
+        }
+
+        conn.commit();
+      } catch (SQLException ex) {
+        log.error("Error in upsertBulk: >>" + ex.getMessage());
+        conn.rollback();
+        throw ex;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
   public boolean deleteById(int imageId) throws SQLException {
     String deleteQuery = "DELETE FROM " + TableColumnsPostImages.TABLE.getName()
             + " WHERE " + TableColumnsPostImages.ID.getName() + " = ? ";
@@ -169,7 +270,6 @@ public class PostImageRepositoryImpl implements PostImageRepository {
             image = resultSetToPostImage(rs);
           }
         }
-        ;
       }
     }
 

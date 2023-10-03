@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create New Post</title>
+    <link rel="stylesheet" th:href="@{/post_edit/css/main.css}"/>
+    <script th:inline="javascript" defer>
+        const _isRedirected = /*[[${isRedirected}]]*/ false;
+        const _isSuccess = /*[[${isSuccess}]]*/ false;
+        const _post = /*[[${post}]]*/ null;
+
+    </script>
+    <script defer>
+        const showResult = (isSuccess) => {
+            if (isSuccess == null) return;
+
+            const msg = isSuccess ? "등록에 성공하였습니다." : "등록에 실패하였습니다.";
+            alert(msg);
+        }
+
+        showResult(_isSuccess);
+    </script>
+    <script th:src="@{/post_edit/js/handleImgTag.js}" type="module"></script>
+    <script th:src="@{/post_edit/js/main.js}" type="module"></script>
+
+</head>
+<body>
+<h1>New Post</h1>
+<form class="form" method="post" action="/post" enctype="multipart/form-data" th:object="${post}">
+    <input type="hidden" name="_method" value="put"/>
+    <input type="hidden" name="userId" th:value="1"/>
+    <input type="hidden" name="id" th:value="*{id}"/>
+
+    <div>
+        <label for="title">게시글 제목</label>
+        <input type="text" id="title" name="title" th:value="*{title}"/>
+        <span th:if="${isRedirected == 1 and #fields.hasErrors('title')}" th:errors="*{title}"></span>
+    </div>
+
+
+    <div>
+        <label for="textContent">게시글 내용</label>
+        <input type="text" id="textContent" name="textContent" th:value="*{textContent}"/>
+        <span th:if="${isRedirected == 1 and #fields.hasErrors('textContent')}" th:errors="*{textContent}"></span>
+    </div>
+
+    <div>
+        <div th:insert="~{/post_edit/components/imageInput1 :: imgTag1 }"></div>
+    </div>
+
+    <div>
+        <div th:insert="~{/post_edit/components/imageInput2 :: imgTag2 }"></div>
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

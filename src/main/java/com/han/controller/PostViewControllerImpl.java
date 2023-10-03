@@ -4,6 +4,7 @@ import com.han.constants.EndPoint;
 import com.han.constants.ViewName;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostDetailDto;
+import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.model.Post;
 import com.han.service.PostService;
@@ -29,6 +30,60 @@ public class PostViewControllerImpl implements PostViewController {
   @Autowired
   public PostViewControllerImpl(PostService postService) {
     this.postService = postService;
+  }
+
+  @PutMapping(EndPoint.POST)
+  @Override
+  public String editPost(
+          @Valid @ModelAttribute("post") PostEditDto dto,
+          BindingResult br,
+          RedirectAttributes redirectAttributes
+  ) {
+
+    if (br.hasErrors()) {
+      redirectAttributes.addFlashAttribute("post", dto);
+      redirectAttributes.addFlashAttribute("isSuccess", 0);
+      redirectAttributes.addFlashAttribute("isRedirected", 1);
+      return "redirect:" + "/post/" + dto.getId() + "/edit";
+    }
+
+
+    boolean isSuccess = false;
+    try {
+      isSuccess = postService.editPost(dto);
+    } catch (Exception ex) {
+      redirectAttributes.addFlashAttribute("isSuccess", 0);
+      redirectAttributes.addFlashAttribute("msg", ex.getMessage());
+    }
+
+    if (isSuccess) {
+      redirectAttributes.addFlashAttribute("isSuccess", 1);
+      return "redirect:" + "/post/" + dto.getId();
+    } else {
+      redirectAttributes.addFlashAttribute("isSuccess", 0);
+      redirectAttributes.addFlashAttribute("post", dto);
+      redirectAttributes.addFlashAttribute("isRedirected", 1);
+      return "redirect:" + "/post/" + dto.getId() + "/edit";
+    }
+
+  }
+
+  @GetMapping(EndPoint.POST_EDIT)
+  @Override
+  public String showPostEditForm(@PathVariable("postId") Integer postId, Model model) {
+    Optional<PostDetailDto> detail = Optional.empty();
+
+    try {
+      detail = postService.getPostDetail(postId);
+    } catch (SQLException ex) {
+      log.error("Error in showPostDetail: >> " + ex.getMessage());
+      model.addAttribute("error", "데이터를 가져오는 중 문제가 발생하였습니다.");
+    }
+
+    model.addAttribute("post", detail.orElse(null));
+
+
+    return ViewName.POST_EDIT_VIEW;
   }
 
   @GetMapping(EndPoint.POST_DETAIL)

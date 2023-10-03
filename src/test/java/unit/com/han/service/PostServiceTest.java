@@ -5,6 +5,7 @@ import com.han.constants.SortType;
 import com.han.constants.tablesColumns.TableColumnsPost;
 import com.han.dto.PostCreateDto;
 import com.han.dto.PostDetailDto;
+import com.han.dto.PostEditDto;
 import com.han.dto.PostListDto.PostListDto;
 import com.han.dto.PostUpdateDto;
 import com.han.model.Post;
@@ -113,7 +114,7 @@ public class PostServiceTest {
     boolean success = true;
 
     boolean fail = false;
-    private PostUpdateDto dummyDto = new PostUpdateDto(1,1,  "this is update");
+    private PostEditDto dummyDto = new PostEditDto();
     private Post dummyPost = new Post(dummyDto.getId(), dummyDto.getUserId(), dummyDto.getTitle(), dummyDto.getTextContent());
 
     @Test
@@ -125,7 +126,7 @@ public class PostServiceTest {
     }
 
     @Test
-    public void editPost_Return_False() throws SQLException {
+    public void editPost_Return_False() throws Exception {
       when(postRepository.update(dummyPost)).thenReturn(fail);
 
       boolean result = postService.editPost(dummyDto);
@@ -135,7 +136,7 @@ public class PostServiceTest {
     }
 
     @Test
-    public void editPost_Return_True() throws SQLException {
+    public void editPost_Return_True() throws Exception {
       when(postRepository.update(dummyPost)).thenReturn(success);
 
       boolean result = postService.editPost(dummyDto);
