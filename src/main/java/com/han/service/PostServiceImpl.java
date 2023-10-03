@@ -38,6 +38,7 @@ public class PostServiceImpl implements PostService {
 
   @Override
   public boolean deletePermanently(int postId) throws SQLException {
+
     boolean result = postRepository.deletePermanently(postId);
     return result;
   }
